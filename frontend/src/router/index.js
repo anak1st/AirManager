@@ -28,15 +28,15 @@ export default route(function ({ /* store , ssrContext */ } ) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-  Router.beforeEach((to, from, next) => {
-    const userStore = useUserStore()
-    console.log("Login?", userStore.isLogin, "to:", to.fullPath)
-    if (to.fullPath !== '/login' && !userStore.isLogin) {
-      next('/login')
-    } else {
-      next()
-    }
-  })
+  // Router.beforeEach((to, from, next) => {
+  //   const userStore = useUserStore()
+  //   console.log("Login?", userStore.isLogin, "to:", to.fullPath)
+  //   if (to.fullPath !== '/login' && !userStore.isLogin) {
+  //     next('/login')
+  //   } else {
+  //     next()
+  //   }
+  // })
 
   return Router
 })

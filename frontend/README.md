@@ -1,41 +1,15 @@
-# Quasar App (quasar-project)
+#
 
-A Quasar Project
+- pages
+  - Manage 管理用户 (最高管理员)
+  - ? ManageAirlines 管理航空公司
+  - ? ManageAirports 管理飞机场
 
-## Install the dependencies
-```bash
-yarn
-# or
-npm install
-```
+  - AirportFlights 查看起飞和降落在这里的航班 (飞机场)
+    - 航线机场视图
+    - 有权利添加航班延误
+  - ? AirportBooks 单独机票管理 (飞机场)
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
-
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+  - AirlineAircrafts 管理飞机 (航空公司)
+  - AirlineFlights 管理航线 (航空公司)
+    - 航线公司视图

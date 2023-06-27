@@ -12,19 +12,17 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Fly App
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
       <div class="q-px-xl q-pt-xl q-pb-md">
-        <div class="text-h3 text-weight-bold">
-          Todo
+        <div class="text-h3 text-weight-bold q-mr-md">
+          {{ pageTitle }}
         </div>
         <div class="text-subtitle1">{{ todayDate }}</div>
       </div>
       <q-img
-        src="~assets/GawrGura.png"
+        src="src/assets/A380.jpg"
         class="header-image absolute-top"
       />
 
@@ -36,34 +34,46 @@
         :width="300"
         :breakpoint="600"
       >
+        <q-img
+          src="~assets/Mountain.jpg"
+          class="absolute-top"
+          style="height: 192px"
+        >
+          <q-item class="absolute-bottom">
+            <q-item-section avatar>
+              <q-avatar size="56px" color="white">
+                <img v-if = "avatarImage.length !== 0" :src="avatarImage" >
+                <div class="text-black" v-if = "avatarImage.length === 0">
+                  {{ ($userStore.username.length > 0 ? $userStore.username : "虚无")[0] }}
+                </div>
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <div class="word-shadow text-h6 text-weight-bold">
+                {{ $userStore.username.length > 0 ? $userStore.username : "虚无" }}
+              </div>
+              <div class="word-shadow text-subtitle2">
+                {{ $userStore.email.length > 0 ? $userStore.email : "123456@nullptr.com" }}
+              </div>
+            </q-item-section>
+          </q-item>
+        </q-img>
+
         <q-scroll-area
           style="height: calc(100% - 192px); margin-top: 192px; border-right: 1px solid #ddd">
           <q-list padding>
-            <q-item
-              to="/"
+
+            <q-item v-for="page in pageList" :key="page.to"
+              :to="page.to"
               exact
               clickable
               v-ripple>
               <q-item-section avatar>
-                <q-icon name="list" />
+                <q-icon :name="page.icon" />
               </q-item-section>
 
               <q-item-section>
-                Todo
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              to="/help"
-              exact
-              clickable
-              v-ripple>
-              <q-item-section avatar>
-                <q-icon name="help" />
-              </q-item-section>
-
-              <q-item-section>
-                帮助
+                {{ page.text }}
               </q-item-section>
             </q-item>
 
@@ -84,19 +94,7 @@
             </q-item>
           </q-list>
         </q-scroll-area>
-
-        <q-img class="absolute-top" src="~assets/CatGirl.png" style="height: 192px">
-          <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
-              <img src="~assets/heita2.jpg">
-            </q-avatar>
-            <div class="word-shadow text-h5 text-weight-bold text-grey-9"> {{ $userStore.name }}  </div>
-            <div class="word-shadow text-grey-9"> {{ $userStore.email }}</div>
-          </div>
-        </q-img>
       </q-drawer>
-
-
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -116,7 +114,6 @@ const $userStore = useUserStore()
 import { useRouter } from 'vue-router';
 const $router = useRouter()
 
-
 const leftDrawerOpen = ref(false)
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -124,7 +121,7 @@ const toggleLeftDrawer = () => {
 
 const todayDate = ref(date.formatDate(Date.now(), 'YYYY/MM/DD HH:mm:ss'))
 
-const timer = setInterval(() => {
+setInterval(() => {
   todayDate.value = date.formatDate(Date.now(), 'YYYY/MM/DD HH:mm:ss')
 }, 1000)
 
@@ -141,6 +138,13 @@ const confirm = () => {
   })
 }
 
+const avatarImage = ref('')
+
+defineProps({
+  pageList: { type: Array },
+  pageTitle: { type: String }
+})
+
 </script>
 
 <style lang="scss">
@@ -149,16 +153,5 @@ const confirm = () => {
   z-index: -1;
   opacity: 0.4;
   filter: grayscale(60%);
-}
-
-.avatar-image {
-  filter: brightness(60%);
-}
-
-.word-shadow {
-  text-shadow: 0 0 10px #ffffff,
-               0 0 20px #ffffff,
-               0 0 30px #ffffff,
-               0 0 40px #ffffff,
 }
 </style>

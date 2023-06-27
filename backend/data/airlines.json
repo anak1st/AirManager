@@ -1,0 +1,22 @@
+[
+  {
+    "code": "CA",
+    "name": "中国国际航空公司",
+    "country": "中国"
+  },
+  {
+    "code": "MU",
+    "name": "中国东方航空公司",
+    "country": "中国"
+  },
+  {
+    "code": "CZ",
+    "name": "中国南方航空公司",
+    "country": "中国"
+  },
+  {
+    "code": "CX",
+    "name": "国泰航空公司",
+    "country": "中国香港"
+  }
+]

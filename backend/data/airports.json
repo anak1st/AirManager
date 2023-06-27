@@ -1,0 +1,56 @@
+[
+  {
+    "code": "SHA",
+    "name": "上海虹桥国际机场",
+    "city": "上海",
+    "country": "中国"
+  },
+  {
+    "code": "PVG",
+    "name": "上海浦东国际机场",
+    "city": "上海",
+    "country": "中国"
+  },
+  {
+    "code": "WUX",
+    "name": "无锡苏南硕放国际机场",
+    "city": "无锡",
+    "country": "中国"
+  },
+  {
+    "code": "CAN",
+    "name": "广州白云国际机场",
+    "city": "广州",
+    "country": "中国"
+  },
+  {
+    "code": "PEK",
+    "name": "北京首都国际机场",
+    "city": "北京",
+    "country": "中国"
+  },
+  {
+    "code": "XIY",
+    "name": "西安咸阳国际机场",
+    "city": "西安",
+    "country": "中国"
+  },
+  {
+    "code": "HGH",
+    "name": "杭州萧山国际机场",
+    "city": "杭州",
+    "country": "中国"
+  },
+  {
+    "code": "SZX",
+    "name": "深圳宝安国际机场",
+    "city": "深圳",
+    "country": "中国"
+  },
+  {
+    "code": "NKG",
+    "name": "南京禄口国际机场",
+    "city": "南京",
+    "country": "中国"
+  }
+]

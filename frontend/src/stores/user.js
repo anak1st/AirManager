@@ -6,7 +6,8 @@ export const useUserStore = defineStore('user', {
       isLogin: false,
       id: '',
       email: '',
-      name: '',
+      username: '',
+      admin_type: '',
     }
   },
 
@@ -15,11 +16,13 @@ export const useUserStore = defineStore('user', {
   getters: {},
 
   actions: {
-    login (id, email, name) {
+    login (id, email, username, admin_type) {
       this.isLogin = true
       this.id = id
       this.email = email
-      this.name = name
+      this.username = username
+      this.admin_type = admin_type
+      console.log(this.id, this.email, this.username, this.admin_type)
     },
     logout () {
       this.isLogin = false
