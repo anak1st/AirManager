@@ -1,9 +1,9 @@
 <template>
-  <MainLayout :page-list="AirportLinks" page-title="Airport"  />
+  <DashboardLayout :page-list="AirportLinks" page-title="Airport"  />
 </template>
 
 <script setup>
-import MainLayout from './MainLayout.vue';
+import DashboardLayout from './DashboardLayout.vue';
 import { AirportLinks } from 'src/router/links';
 
 </script>

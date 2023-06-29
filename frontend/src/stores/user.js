@@ -26,9 +26,10 @@ export const useUserStore = defineStore('user', {
     },
     logout () {
       this.isLogin = false
-      this.email = ''
-      this.name = ''
       this.id = ''
+      this.email = ''
+      this.username = ''
+      this.admin_type = ''
     },
   }
 })

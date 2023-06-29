@@ -1,5 +1,5 @@
 <template>
-  <MainLayout
+  <DashboardLayout
   :page-list="ManageLinks"
   page-title="Manage"
 />
@@ -10,7 +10,7 @@
 // import { useUserStore } from 'src/stores/user';
 // const $userStore = useUserStore();
 
-import MainLayout from './MainLayout.vue';
+import DashboardLayout from './DashboardLayout.vue';
 import { ManageLinks } from 'src/router/links';
 
 </script>

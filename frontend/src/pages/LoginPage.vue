@@ -1,27 +1,18 @@
 <template>
-  <q-page>
+  <q-page padding>
     <q-card
       class="items-center my-card"
-      style="width: 400px; left: calc(50% - 200px); top: 80px;"
+      style="width: 500px; left: calc(50% - 250px); top: 50px;"
     >
       <q-img src="~assets/Mountain.jpg" style="height: 200px"/>
-
+      <div class="text-h4 text-center q-pa-md">登录</div>
       <q-card-section>
-        <div class="q-my-md text-h4 text-center">登录</div>
-
-        <q-input
-          class="q-my-sm"
-          v-model="name"
-          :disable="inputType !== 'userSignup'"
-          filled type="text"
-          label="用户名"
-        />
-
         <q-input
           class="q-my-sm"
           v-model="email"
           filled type="email"
-          label="Email" />
+          label="Email"
+        />
 
         <q-input
           class="q-my-sm"
@@ -51,25 +42,16 @@
           toggle-color="primary"
           :options="[
             { label: '用户登录', value: 'userSignin' },
-            { label: '用户注册', value: 'userSignup' },
-            { label: '管理员登录', value: 'adminSignup' }
+            { label: '管理员登录', value: 'adminSignin' }
           ]"
         />
-        <q-space></q-space>
-        <q-btn
-          class="q-mx-sm"
-          v-close-popup
-          v-if="inputType === 'userSignup'"
-          color="primary"
-          label="注册"
-          @click="signup" />
+        <q-space />
         <q-btn
           class="q-ma-sm"
           v-close-popup
-          v-if="inputType !== 'userSignup'"
           color="primary"
           label="登录"
-          @click="signin" />
+          @click="login" />
       </q-card-actions>
     </q-card>
   </q-page>
@@ -90,36 +72,15 @@ const $userStore = useUserStore()
 const inputType = ref('userSignin')
 const email = ref('')
 const password = ref('')
-const name = ref('')
 const isPwd = ref(true)
 
-const signup = () => {
-  if (email.value === ''
-   || password.value === ''
-   || name.value === '') {
-    $q.notify('请输入邮箱和密码')
-    return
-  }
-  api.post('/users', {
-    name: name.value,
-    email: email.value,
-    password: password.value,
-  }).then((res) => {
-    console.log(res)
-    $q.notify('注册成功')
-  }).catch((err) => {
-    console.log(err)
-    $q.notify('注册失败，请不要使用重复邮箱')
-  })
-}
 
-const signin = () => {
+const login = () => {
   if (email.value === '' || password.value === '') {
     $q.notify('请输入邮箱和密码')
     return
   }
-
-  if (inputType.value === 'adminSignup') {
+  if (inputType.value === 'adminSignin') {
     api.post('/admins/login', {
       email: email.value,
       password: password.value,
@@ -147,8 +108,8 @@ const signin = () => {
       password: password.value,
     }).then((res) => {
       console.log(res)
-      $router.push('/')
-      $userStore.login(res.data.id, res.data.email, res.data.name, "Null")
+      $userStore.login(res.data.id, res.data.email, res.data.username, "User")
+      $router.push('/user')
       $q.notify('登录成功')
     }).catch((err) => {
       console.log(err)

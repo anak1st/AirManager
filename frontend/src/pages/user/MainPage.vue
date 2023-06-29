@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-lg">
-    <h5 class="q-mt-none">User Main Page</h5>
+    <h5>User Main Page</h5>
   </q-page>
 </template>
 

@@ -28,15 +28,35 @@ export default route(function ({ /* store , ssrContext */ } ) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-  // Router.beforeEach((to, from, next) => {
-  //   const userStore = useUserStore()
-  //   console.log("Login?", userStore.isLogin, "to:", to.fullPath)
-  //   if (to.fullPath !== '/login' && !userStore.isLogin) {
-  //     next('/login')
-  //   } else {
-  //     next()
-  //   }
-  // })
+  Router.beforeEach((to, from, next) => {
+    const userStore = useUserStore()
+    console.log(userStore.admin_type, "Login?", userStore.isLogin, "to:", to.fullPath)
+    if (to.fullPath === "/" || to.fullPath === "/register") {
+      next()
+      return
+    }
+    if (to.fullPath !== "/login" && !userStore.isLogin) {
+      next('/login')
+      return
+    }
+    if (userStore.isLogin && userStore.admin_type.startsWith("Airport") && !to.fullPath.startsWith('/airport')) {
+      next('/airport')
+      return
+    }
+    if (userStore.isLogin && userStore.admin_type.startsWith("Airline") && !to.fullPath.startsWith('/airline')) {
+      next('/airline')
+      return
+    }
+    if (userStore.isLogin && userStore.admin_type.startsWith("Super") && !to.fullPath.startsWith('/manage')) {
+      next('/manage')
+      return
+    }
+    if (userStore.isLogin && userStore.admin_type.startsWith("User") && !to.fullPath.startsWith('/user')) {
+      next('/user')
+      return
+    }
+    next()
+  })
 
   return Router
 })

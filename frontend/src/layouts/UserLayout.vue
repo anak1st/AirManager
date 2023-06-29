@@ -1,9 +1,9 @@
 <template>
-  <MainLayout :page-list="UserLinks" page-title="User"  />
+  <DashboardLayout :page-list="UserLinks" page-title="User"  />
 </template>
 
 <script setup>
-import MainLayout from './MainLayout.vue';
+import DashboardLayout from './DashboardLayout.vue';
 import { UserLinks } from 'src/router/links';
 
 </script>

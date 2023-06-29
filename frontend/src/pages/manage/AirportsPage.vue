@@ -24,11 +24,12 @@
           row-key="name"
           selection="single"
           v-model:selected="airportSelected"
+          separator="cell"
         />
         <q-btn-group class="q-ma-md">
           <q-btn color="accent" icon="card_giftcard" label="添加" />
-          <q-btn color="accent" icon="create" >
-            删除: {{ airportSelected.length > 0 ? airportSelected[0].name : "无" }}
+          <q-btn color="accent" icon="create" label="删除">
+            机场: {{ airportSelected.length > 0 ? airportSelected[0].name : "无" }}
           </q-btn>
         </q-btn-group>
       </q-tab-panel>
@@ -41,6 +42,7 @@
           row-key="email"
           selection="single"
           v-model:selected="airportAdminSelected"
+          separator="cell"
         />
         <q-btn-group class="q-ma-md">
           <q-btn
@@ -49,15 +51,15 @@
             label="添加"
             @click="addAdminCard = true"
           />
-          <q-btn color="accent" icon="create" @click="deleteAdmin" >
-            删除管理员: {{ airportAdminSelected.length > 0 ? airportAdminSelected[0].email : "无" }}
+          <q-btn color="accent" icon="create" @click="deleteAdmin" label="删除">
+            管理员: {{ airportAdminSelected.length > 0 ? airportAdminSelected[0].email : "无" }}
           </q-btn>
         </q-btn-group>
       </q-tab-panel>
     </q-tab-panels>
     <q-dialog v-model="addAdminCard" >
       <q-card class="my-card" style="width: 400px;">
-        <q-img src="~assets/A380.jpg" style="height: 200px;" />
+        <q-img src="~assets/A380.jpg" style="height: 150px;" />
 
         <q-card-section>
           <div class="q-my-md text-h4 text-center"> 添加机场管理员 </div>
