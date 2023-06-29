@@ -1,3 +1,4 @@
+import json
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -5,7 +6,7 @@ from sqlalchemy.orm import Session
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
-from .utils.hash import hash
+from .utils import hash, get_distance_hav
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -26,6 +27,7 @@ app.add_middleware(
 # Dependency
 def get_db():
     db = SessionLocal()
+    db.expire_on_commit = False
     try:
         yield db
     finally:
@@ -133,7 +135,7 @@ def read_aircraft(aircraft_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/aircrafts/airline_code/{airline_code}", response_model=list[schemas.Aircraft])
-def read_aircraft(airline_code: str, db: Session = Depends(get_db)):
+def read_aircraft_by_airline_code(airline_code: str, db: Session = Depends(get_db)):
     db_aircraft = crud.get_aircrafts_by_airline_code(db, airline_code=airline_code)
     return db_aircraft
 
@@ -144,12 +146,12 @@ def create_aircraft(aircraft: schemas.AircraftCreate, db: Session = Depends(get_
     return crud.create_aircraft(db=db, aircraft=aircraft)
 
 
-@app.delete("/aircrafts/code/{aircraft_code}", response_model=schemas.Aircraft)
-def delete_aircraft(aircraft_code: str, db: Session = Depends(get_db)):
-    db_aircraft = crud.get_aircraft(db, aircraft_code=aircraft_code)
+@app.delete("/aircrafts/id/{aircraft_id}", response_model=schemas.Aircraft)
+def delete_aircraft(aircraft_id: int, db: Session = Depends(get_db)):
+    db_aircraft = crud.get_aircraft(db, aircraft_id=aircraft_id)
     if db_aircraft is None:
         raise HTTPException(status_code=404, detail="Aircraft not found")
-    return crud.delete_aircraft(db=db, aircraft_code=aircraft_code)
+    return crud.delete_aircraft(db=db, aircraft_id=aircraft_id)
 
 # ==================== FlightTypes ====================
 
@@ -159,12 +161,34 @@ def read_flight_types(skip: int = 0, limit: int = 100, db: Session = Depends(get
     return flight_types
 
 
+@app.get("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
+def read_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
+    db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
+    if db_flight_type is None:
+        raise HTTPException(status_code=404, detail="Flight Type not found")
+    return db_flight_type
+
+
+@app.get("/flight_types/airline_code/{airline_code}", response_model=list[schemas.FlightType])
+def read_flight_type_by_airline_code(airline_code: str, db: Session = Depends(get_db)):
+    airline = crud.get_airline(db, airline_code=airline_code)
+    if airline is None:
+        raise HTTPException(status_code=404, detail="Airline not found")
+    db_flight_type = crud.get_flight_types_by_airline_code(db, airline_code=airline_code)
+    return db_flight_type
+
+
 @app.post("/flight_types/", response_model=schemas.FlightType)
 def create_flight_type(flight_type: schemas.FlightTypeCreate, db: Session = Depends(get_db)):
-    db_flight_type = crud.get_flight_type_by_name(db, flight_type_name=flight_type.name)
-    if db_flight_type:
-        raise HTTPException(status_code=400, detail="FlightType already registered")
     return crud.create_flight_type(db=db, flight_type=flight_type)
+
+
+@app.delete("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
+def delete_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
+    db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
+    if db_flight_type is None:
+        raise HTTPException(status_code=404, detail="Flight Type not found")
+    return crud.delete_flight_type(db=db, flight_type_id=flight_type_id)
 
 
 # ==================== Flights ====================
@@ -183,7 +207,7 @@ def read_flight(flight_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/flights/airline_code/{airline_code}", response_model=list[schemas.Flight])
-def read_flight(airline_code: str, db: Session = Depends(get_db)):
+def read_flight_by_airline_code(airline_code: str, db: Session = Depends(get_db)):
     airline = crud.get_airline(db, airline_code=airline_code)
     if airline is None:
         raise HTTPException(status_code=404, detail="Airline not found")
@@ -202,6 +226,14 @@ def delete_flight(flight_id: int, db: Session = Depends(get_db)):
     if db_flight is None:
         raise HTTPException(status_code=404, detail="Flight not found")
     return crud.delete_flight(db=db, flight_id=flight_id)
+
+
+@app.put("/flights/id/{flight_id}", response_model=schemas.Flight)
+def update_flight(flight_id: int, flight: schemas.FlightCreate, db: Session = Depends(get_db)):
+    db_flight = crud.get_flight(db, flight_id=flight_id)
+    if db_flight is None:
+        raise HTTPException(status_code=404, detail="Flight not found")
+    return crud.update_flight(db=db, flight_id=flight_id, flight=flight)
 
 # ==================== Bookings ====================
 
@@ -245,10 +277,18 @@ def login_user(user: schemas.UserLogin, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     user.password = hash(user.password)
-    if db_user.password != user.password:
+    if db_user.password != user.password: # type: ignore
         print(db_user.password, user.password)
         raise HTTPException(status_code=400, detail="Incorrect password")
     return db_user
+
+
+@app.put("/users/id/{user_id}", response_model=schemas.User)
+def update_user(user_id: int, user: schemas.UserMutable, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.update_user(db=db, user_id=user_id, user=user)
 
 
 # ==================== Admins ====================
@@ -265,7 +305,7 @@ def login_admin(admin: schemas.AdminLogin, db: Session = Depends(get_db)):
     db_admin = crud.get_admin_by_email(db, email=admin.email)
     if db_admin is None:
         raise HTTPException(status_code=404, detail="Admin not found")
-    if db_admin.password != admin.password:
+    if db_admin.password != admin.password: # type: ignore
         print(db_admin.password, admin.password)
         raise HTTPException(status_code=400, detail="Incorrect password")
     return db_admin
@@ -301,9 +341,21 @@ def create_admin(admin: schemas.AdminCreate, db: Session = Depends(get_db)):
     return crud.create_admin(db=db, admin=admin)
 
 
-@app.delete("/admins/id/{admin_id}", response_model=schemas.Admin)
+@app.delete("/admins/id/{admin_id}/", response_model=schemas.Admin)
 def delete_admin(admin_id: int, db: Session = Depends(get_db)):
     db_admin = crud.get_admin(db, admin_id=admin_id)
     if db_admin is None:
         raise HTTPException(status_code=404, detail="Admin not found")
     return crud.delete_admin(db=db, admin_id=admin_id)
+
+# ==================== Utils ====================
+@app.get("/airports/dis/", response_model=float)
+def get_airport_distance(airport1_code: str, airport2_code: str, db: Session = Depends(get_db)):
+    airport1 = crud.get_airport(db, airport_code=airport1_code)
+    airport2 = crud.get_airport(db, airport_code=airport2_code)
+    if airport1 is None or airport2 is None:
+        raise HTTPException(status_code=404, detail="Airport not found")
+    return get_distance_hav(airport1.lat, 
+                            airport1.lng,
+                            airport2.lat,
+                            airport2.lng)

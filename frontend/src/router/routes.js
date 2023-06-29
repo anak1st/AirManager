@@ -13,9 +13,12 @@ const routes = [
     path: '/user',
     component: () => import('layouts/UserLayout.vue'),
     children: [
-      { path: '',       component: () => import('pages/user/MainPage.vue') },
-      { path: 'help',   component: () => import('pages/user/HelpPage.vue') },
-      { path: 'book',   component: () => import('pages/user/BookPage.vue') },
+      { path: '',         component: () => import('pages/user/MainPage.vue') },
+      { path: 'help',     component: () => import('pages/user/HelpPage.vue') },
+      { path: 'book',     component: () => import('pages/user/BookPage.vue') },
+      { path: 'flights',  component: () => import('pages/user/FlightsPage.vue') },
+      { path: 'wallet',   component: () => import('pages/user/WalletPage.vue') },
+      { path: 'info',     component: () => import('pages/user/InfoPage.vue') },
     ]
   },
 
@@ -23,9 +26,10 @@ const routes = [
     path: "/airline",
     component: () => import('layouts/AirlineLayout.vue'),
     children: [
-      { path: '',           component: () => import('pages/airline/MainPage.vue') },
-      { path: 'aircrafts',  component: () => import('pages/airline/AircraftsPage.vue') },
-      { path: 'flights',    component: () => import('pages/airline/FlightsPage.vue') },
+      { path: '',             component: () => import('pages/airline/MainPage.vue') },
+      { path: 'aircrafts',    component: () => import('pages/airline/AircraftsPage.vue') },
+      { path: 'flight_types', component: () => import('pages/airline/FlightTypesPage.vue') },
+      { path: 'flights',      component: () => import('pages/airline/FlightsPage.vue') },
     ]
   },
   {

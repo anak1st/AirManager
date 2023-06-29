@@ -19,6 +19,8 @@ class AirportBase(BaseModel):
     name: str
     country: str
     city: str
+    lat: float
+    lng: float
 
     class Config:
         orm_mode = True
@@ -42,7 +44,7 @@ class AircraftBase(BaseModel):
 
 
 class FlightTypeBase(BaseModel):
-    name: str
+    airline_code: str
     airport_code_departure: str
     airport_code_arrival: str
 
@@ -70,6 +72,15 @@ class BookBase(BaseModel):
 
 class UserBase(BaseModel):
     email: str
+
+
+class UserMutable(BaseModel):
+    username: str
+    fullname: str
+    phone: str
+    address: str
+    money: int
+    points: int
 
 
 # ==================== Create ====================
@@ -127,6 +138,7 @@ class Airline(AirlineBase):
 
     # ORM
     aircrafts: list[AircraftBase] = []
+    flight_types: list[FlightTypeBase] = []
 
     class Config:
         orm_mode = True
@@ -171,6 +183,7 @@ class FlightType(FlightTypeBase):
     airport_departure: AirportBase
     airport_arrival: AirportBase
 
+    airline: AirlineBase
     flights: list[FlightBase] = []
 
 
@@ -193,12 +206,17 @@ class User(UserBase):
     fullname: str
     phone: str
     address: str
+    money: int
+    points: int
 
     # ORM
     books: list[BookBase] = []
 
     class Config:
         orm_mode = True
+
+
+
 
 
 class Book(BookBase):

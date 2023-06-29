@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, UniqueConstraint
+from sqlalchemy import Boolean, Float, Column, ForeignKey, Integer, String, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -21,6 +21,8 @@ class Airport(Base):
     name = Column(String, unique=True, index=True)
     country = Column(String)
     city = Column(String)
+    lat = Column(Float)
+    lng = Column(Float)
 
 
 # 航空公司
@@ -32,6 +34,7 @@ class Airline(Base):
     country = Column(String)
 
     aircrafts = relationship("Aircraft", back_populates="airline")
+    flight_types = relationship("FlightType", back_populates="airline")
 
 
 # 飞机
@@ -53,13 +56,15 @@ class FlightType(Base):
     __tablename__ = 'flight_types'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    airline_code = Column(String, ForeignKey("airlines.code"))
     airport_code_departure = Column(String, ForeignKey("airports.code"))
     airport_code_arrival = Column(String, ForeignKey("airports.code"))
 
+    UniqueConstraint(airline_code, airport_code_departure, airport_code_arrival)
+
     airport_departure = relationship("Airport", foreign_keys=[airport_code_departure])
     airport_arrival = relationship("Airport", foreign_keys=[airport_code_arrival])
-
+    airline = relationship("Airline", back_populates="flight_types")
     flights = relationship("Flight", back_populates="flight_type")
 
 
@@ -86,10 +91,13 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, index=True)
     email = Column(String, unique=True, index=True)
-    phone = Column(String, unique=True, index=True)
+    phone = Column(String)
     password = Column(String)
     address = Column(String)
     fullname = Column(String)
+    
+    money = Column(Integer, default=0)
+    points = Column(Integer, default=0)
 
     books = relationship("Book", back_populates="user")
 
@@ -102,10 +110,23 @@ class Book(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     flight_id = Column(Integer, ForeignKey("flights.id"))
     seat = Column(String)
-    status = Column(Integer)
+    status = Column(String)
 
     user = relationship("User", back_populates="books")
     flight = relationship("Flight", back_populates="books")
+
+    UniqueConstraint(flight_id, seat)
+
+
+
+class BookHistory(Base):
+    __tablename__ = "books_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    flight_id = Column(Integer, ForeignKey("flights.id"))
+    seat = Column(String)
+    status = Column(String)
 
     UniqueConstraint(flight_id, seat)
 

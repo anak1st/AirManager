@@ -123,7 +123,6 @@ const todayDate = ref(date.formatDate(Date.now(), 'YYYY/MM/DD HH:mm:ss'))
 
 setInterval(() => {
   todayDate.value = date.formatDate(Date.now(), 'YYYY/MM/DD HH:mm:ss')
-  console.log($userStore.username)
 }, 1000)
 
 const confirm = () => {

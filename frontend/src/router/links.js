@@ -29,6 +29,11 @@ const AirlineLinks = [
     'text': '飞机'
   },
   {
+    'to': '/airline/flight_types',
+    'icon': 'list',
+    'text': '航班类型'
+  },
+  {
     'to': '/airline/flights',
     'icon': 'list',
     'text': '航班'
@@ -65,9 +70,24 @@ const UserLinks = [
     text: '首页'
   },
   {
+    'to': '/user/flights',
+    icon: 'list',
+    text: '航班'
+  },
+  {
     'to': '/user/book',
     icon: 'list',
     text: '订单'
+  },
+  {
+    'to': '/user/wallet',
+    icon: 'list',
+    text: '钱包'
+  },
+  {
+    'to': '/user/info',
+    icon: 'list',
+    text: '个人信息'
   },
   {
     'to': '/user/help',

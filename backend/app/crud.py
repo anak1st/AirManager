@@ -1,3 +1,4 @@
+from sqlalchemy import update, delete
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -48,7 +49,7 @@ def create_aircraft(db: Session, aircraft: schemas.AircraftCreate):
     return db_aircraft
 
 
-def delete_aircraft(db: Session, aircraft_id: str):
+def delete_aircraft(db: Session, aircraft_id: int):
     db_aircraft = db.query(models.Aircraft).filter(models.Aircraft.id == aircraft_id).first()
     db.delete(db_aircraft)
     db.commit()
@@ -71,6 +72,13 @@ def create_airport(db: Session, airport: schemas.AirportCreate):
     db.add(db_airport)
     db.commit()
     db.refresh(db_airport)
+    return db_airport
+
+
+def delete_airport(db: Session, airport_code: str):
+    db_airport = db.query(models.Airport).filter(models.Airport.code == airport_code).first()
+    db.delete(db_airport)
+    db.commit()
     return db_airport
 
 
@@ -99,12 +107,12 @@ def get_flight_types(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.FlightType).offset(skip).limit(limit).all()
 
 
+def get_flight_types_by_airline_code(db: Session, airline_code: str):
+    return db.query(models.FlightType).filter(models.FlightType.airline_code == airline_code).all()
+
+
 def get_flight_type(db: Session, flight_type_id: int):
     return db.query(models.FlightType).filter(models.FlightType.id == flight_type_id).first()
-
-
-def get_flight_type_by_name(db: Session, flight_type_name: str):
-    return db.query(models.FlightType).filter(models.FlightType.name == flight_type_name).first()
 
 
 def create_flight_type(db: Session, flight_type: schemas.FlightTypeCreate):
@@ -153,6 +161,20 @@ def delete_flight(db: Session, flight_id: int):
     return db_flight
 
 
+def update_flight(db: Session, flight_id: int, flight: schemas.FlightCreate):
+    db_flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
+
+    res = db.query(models.Flight).filter(models.Flight.id == flight_id).update({
+        models.Flight.aircraft_id: flight.aircraft_id,
+        models.Flight.flight_type_id: flight.flight_type_id,
+        models.Flight.time_arrival: flight.time_arrival,
+        models.Flight.time_departure: flight.time_departure,
+        models.Flight.status: flight.status
+    }, synchronize_session=False)
+    db.commit()
+    db.refresh(db_flight)
+    return db_flight
+
 # ==================== Books ====================
 
 
@@ -199,6 +221,22 @@ def delete_user(db: Session, user_id: int):
     db.delete(db_user)
     db.commit()
     return db_user
+
+
+def update_user(db: Session, user_id: int, user: schemas.UserMutable):
+    db_user = db.query(models.User).filter(models.User.id == user_id).update({
+        models.User.username: user.username,
+        models.User.phone: user.phone,
+        models.User.fullname: user.fullname,
+        models.User.address: user.address,
+        models.User.money: user.money,
+        models.User.points: user.points
+    }, synchronize_session=False)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 
 
 # ==================== Admins ====================

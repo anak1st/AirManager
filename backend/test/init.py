@@ -51,7 +51,7 @@ def add_aircraft_types():
 
 
 if __name__ == '__main__':
-    # add_superadmin()
-    # add_airports()
-    # add_airlies()
+    add_superadmin()
+    add_airports()
+    add_airlies()
     add_aircraft_types()
