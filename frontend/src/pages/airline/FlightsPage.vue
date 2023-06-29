@@ -57,76 +57,112 @@
       </q-item>
     </q-list>
     <q-dialog v-model="card" >
-      <q-card class="my-card" style="width: 400px;">
+      <q-card class="my-card" style="width: 450px;">
+        <q-stepper
+          v-model="step"
+          ref="stepper"
+          alternative-labels
+          color="primary"
+          animated
+        >
+          <q-step
+            :name="1"
+            title="航班信息"
+            icon="settings"
+            :done="step > 1"
+          >
+            <q-card-section>
 
-        <q-card-section>
-          <div class="q-my-md text-h5 text-center"> {{ cardStatus }}航班信息 </div>
+              <q-select filled class="q-md-md" v-model="aircraft_id" :options="aircrafts" label="飞机代码" />
 
+              <q-select filled class="q-my-md" v-model="flight_type_id" :options="flight_types" label="航班路线" />
 
-          <q-input filled class="q-ma-md" v-model="aircraft_id" label="飞机代码" />
+              <q-input filled label="出发时间" class="q-my-md" v-model="time_departure">
+                <template v-slot:append>
+                  <q-icon name="event" class="q-px-sm cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="time_departure" mask="YYYY-MM-DD HH:mm">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                  <q-icon name="access_time" class="q-px-sm cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-time v-model="time_departure" mask="YYYY-MM-DD HH:mm" format24h>
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
 
-          <q-select filled class="q-ma-md" v-model="flight_type_id" :options="flight_types" label="出发机场" />
+              <q-input filled label="到达时间" class="q-my-md" v-model="time_arrival">
+                <template v-slot:append>
+                  <q-icon name="event" class="q-px-sm cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="time_arrival" mask="YYYY-MM-DD HH:mm">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                  <q-icon name="access_time" class="q-px-sm cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-time v-model="time_arrival" mask="YYYY-MM-DD HH:mm" format24h>
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" flat />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
 
-          <q-input filled label="出发时间" class="q-ma-md" v-model="time_departure">
-            <template v-slot:append>
-              <q-icon name="event" class="q-px-sm cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="time_departure" mask="YYYY-MM-DD HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-              <q-icon name="access_time" class="q-px-sm cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-time v-model="time_departure" mask="YYYY-MM-DD HH:mm" format24h>
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+              <q-option-group
+                v-model="group"
+                :options="options"
+                color="primary"
+                inline
+              />
+            </q-card-section>
+            <q-stepper-navigation align="right">
+              <q-btn @click="goto2" color="primary" label="继续" />
+            </q-stepper-navigation>
+          </q-step>
 
-          <q-input filled label="到达时间" class="q-ma-md" v-model="time_arrival">
-            <template v-slot:append>
-              <q-icon name="event" class="q-px-sm cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="time_arrival" mask="YYYY-MM-DD HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-              <q-icon name="access_time" class="q-px-sm cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-time v-model="time_arrival" mask="YYYY-MM-DD HH:mm" format24h>
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+          <q-step
+            :name="2"
+            title="2"
+            caption="Optional"
+            icon="create_new_folder"
+            :done="step > 2"
+          >
+            <q-input filled type="number" v-model="price0" label="经济舱价格" class="q-my-md" />
+            <q-input filled type="number" v-model="price1" label="商务舱价格" class="q-my-md" />
+            <q-input filled type="number" v-model="price2" label="头等舱价格" class="q-my-md" />
+            <q-stepper-navigation align="right">
+              <q-btn flat @click="step = 1" color="primary" label="返回" class="q-mx-sm" />
+              <q-btn @click="goto3" color="primary" label="继续" class="q-mx-sm"/>
+            </q-stepper-navigation>
+          </q-step>
 
-          <q-option-group
-            v-model="group"
-            :options="options"
-            color="primary"
-            inline
-          />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup color="primary" label="取消" />
-          <q-btn v-close-popup color="primary" :label="cardStatus" @click="confirm" />
-        </q-card-actions>
+          <q-step
+            :name="3"
+            title="3"
+            icon="add_comment"
+          >
+            确认{{  }}航班吗？
+            <q-stepper-navigation align="right">
+              <q-btn flat @click="step = 2" color="primary" label="返回" class="q-mx-sm" />
+              <q-btn v-close-popup color="primary" :label="cardStatus" @click="confirm" class="q-mx-sm" />
+            </q-stepper-navigation>
+          </q-step>
+        </q-stepper>
       </q-card>
     </q-dialog>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -148,6 +184,9 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
+
+const step = ref(1)
+
 const flights = ref([])
 let flight_types = []
 
@@ -163,11 +202,23 @@ const updateFlightTypes = () => {
   })
 }
 
-
 const updateFlights = () => {
   const url = '/flights/airline_code/' + $userStore.admin_type.slice(8)
   api.get(url).then((res) => {
     flights.value = res.data
+  })
+}
+
+let aircrafts = []
+const updateAircrafts = () => {
+  const url = '/aircrafts/airline_code/' + $userStore.admin_type.slice(8)
+  api.get(url).then((res) => {
+    aircrafts = res.data
+    for (let aircraft of aircrafts) {
+      aircraft.label = ' (' + aircraft.id + ') ' + aircraft.type.name
+      aircraft.value = aircraft.id
+    }
+    console.log(aircrafts)
   })
 }
 
@@ -191,7 +242,6 @@ const getStatus = (status) => {
   }
   return '准点'
 }
-
 
 const aircraft_id = ref('')
 const flight_type_id = ref('')
@@ -217,6 +267,75 @@ const options = [
 const card = ref(false)
 const cardStatus = ref("")
 
+const goto2 = () => {
+  if (aircraft_id.value === '') {
+    $q.notify({
+      color: 'negative',
+      message: '请选择飞机'
+    })
+    return
+  }
+  if (flight_type_id.value === '') {
+    $q.notify({
+      color: 'negative',
+      message: '请选择航班类型'
+    })
+    return
+  }
+  if (time_departure.value === '') {
+    $q.notify({
+      color: 'negative',
+      message: '请选择起飞时间'
+    })
+    return
+  }
+  if (time_arrival.value === '') {
+    $q.notify({
+      color: 'negative',
+      message: '请选择到达时间'
+    })
+    return
+  }
+  if (time_departure.value >= time_arrival.value) {
+    $q.notify({
+      color: 'negative',
+      message: '到达时间必须晚于起飞时间'
+    })
+    return
+  }
+  if (group.value === '') {
+    $q.notify({
+      color: 'negative',
+      message: '请选择航班状态'
+    })
+    return
+  }
+
+  step.value = 2
+}
+
+const price0 = ref(0)
+const price1 = ref(0)
+const price2 = ref(0)
+
+const goto3 = () => {
+  if (parseInt(price0.value) > parseInt(price1.value)) {
+    $q.notify({
+      color: 'negative',
+      message: '经济舱价格必须小于或等于商务舱价格'
+    })
+    return
+  }
+  if (parseInt(price1.value) > parseInt(price2.value)) {
+    $q.notify({
+      color: 'negative',
+      message: '商务舱价格必须小于或等于头等舱价格'
+    })
+    return
+  }
+  step.value = 3
+}
+
 const clickAdd = () => {
   card.value = true
   cardStatus.value = "添加"
@@ -227,11 +346,17 @@ const clickModify = (id) => {
   cardStatus.value = "修改"
 
   const flight = flights.value.filter((flight) => flight.id === id)[0]
-  aircraft_id.value = flight.aircraft_id
-  flight_type_id.value = flight.flight_type_id
+  const aircraft = aircrafts.filter((aircraft) => aircraft.id === flight.aircraft_id)[0]
+  const flight_type = flight_types.filter((flight_type) => flight_type.id === flight.flight_type_id)[0]
+
+  aircraft_id.value = aircraft
+  flight_type_id.value = flight_type
   time_departure.value = date.formatDate(flight.time_departure, 'YYYY-MM-DD HH:mm')
   time_arrival.value = date.formatDate(flight.time_arrival, 'YYYY-MM-DD HH:mm')
   group.value = flight.status
+  price0.value = flight.price0
+  price1.value = flight.price1
+  price2.value = flight.price2
 }
 
 const confirm = () => {
@@ -245,15 +370,19 @@ const confirm = () => {
 const confirmAdd = () => {
   const url = '/flights/'
   const data = {
-    aircraft_id: aircraft_id.value,
-    flight_type_id: flight_type_id.value,
+    aircraft_id: aircraft_id.value.id,
+    flight_type_id: flight_type_id.value.id,
     time_departure: time_departure.value,
     time_arrival: time_arrival.value,
-    status: group.value
+    status: group.value,
+    price0: price0.value,
+    price1: price1.value,
+    price2: price2.value
   }
+  console.log(data)
   api.post(url, data).then((res) => {
     updateFlights()
-    addFlightsCard.value = false
+    card.value = false
     $q.notify({
       color: 'green-4',
       textColor: 'white',
@@ -274,15 +403,20 @@ const confirmAdd = () => {
 const confirmModify = () => {
   const url = '/flights/id/' + modify_id
   const data = {
-    aircraft_id: aircraft_id.value,
-    flight_type_id: flight_type_id.value,
+    aircraft_id: aircraft_id.value.id,
+    flight_type_id: flight_type_id.value.id,
     time_departure: time_departure.value,
     time_arrival: time_arrival.value,
-    status: group.value
+    status: group.value,
+    price0: price0.value,
+    price1: price1.value,
+    price2: price2.value
   }
+  console.log(data)
   api.put(url, data).then((res) => {
+    updateAircrafts()
     updateFlights()
-    addFlightsCard.value = false
+    card.value = false
     $q.notify({
       color: 'green-4',
       textColor: 'white',
@@ -300,17 +434,16 @@ const confirmModify = () => {
   })
 }
 
-
 const updateAll = () => {
+  updateAircrafts()
   updateFlights()
   updateFlightTypes()
 }
 onMounted(() => {
   updateAll()
 })
-setInterval(async () => {
-  await updateAll()
-  console.log(flights.value)
+setInterval(() => {
+  updateAll()
 }, 1000 * 10);
 
 

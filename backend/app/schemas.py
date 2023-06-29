@@ -59,6 +59,10 @@ class FlightBase(BaseModel):
     time_arrival: datetime
     status: str
 
+    price0: int
+    price1: int
+    price2: int
+
     class Config:
         orm_mode = True
 
@@ -68,6 +72,7 @@ class BookBase(BaseModel):
     flight_id: int
     seat: int
     status: str
+    pay: int
 
 
 class UserBase(BaseModel):

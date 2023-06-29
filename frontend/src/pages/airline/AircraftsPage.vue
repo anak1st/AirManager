@@ -1,37 +1,67 @@
 <template>
-  <q-page class="q-pa-lg bg-grey-1 column">
-    <div>
-      <q-table
-        flat bordered
-        :rows="aircrafts"
-        :columns="aircraftColumns"
-        row-key="name"
-        selection="single"
-        v-model:selected="aircraftSelected"
-        separator="cell"
+  <q-page>
+    <q-list bordered>
+      <q-item
+        v-for="aircraft in aircrafts"
+        :key="aircraft.id"
+        class="q-my-sm row"
+        clickable
+        v-ripple
+      >
+        <q-item-section>
+          <q-item-label>{{ aircraft.airline_code + " " + aircraft.id }}</q-item-label>
+          <q-item-label caption>{{ aircraft.type_code }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>{{ aircraft.type.name }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side>
+          <q-item-label>
+            <q-btn round color="red" icon="delete" @click="confirm(aircraft.id)" />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn
+        fab
+        icon="add"
+        color="accent"
+        @click="cardAdd = true"
       />
-      <q-btn-group class="q-my-md">
-        <q-btn color="accent" icon="card_giftcard" label="添加" />
-        <q-btn color="accent" icon="create" label="删除">
-          : {{ "无" }}
-        </q-btn>
-      </q-btn-group>
-    </div>
-    <q-dialog v-model="addAircraftCard" >
+    </q-page-sticky>
+    <q-dialog v-model="cardAdd" >
       <q-card class="my-card" style="width: 400px;">
-        <q-img src="~assets/A380.jpg" style="height: 150px;" />
-
         <q-card-section>
-          <div class="q-my-md text-h4 text-center"> 添加机场管理员 </div>
+          <div class="q-my-md text-h5 text-center"> 添加飞机类型! </div>
 
-          <q-input filled class="q-ma-md" v-model="addAircraftCard" label="密码"   />
+          <q-select
+            filled
+            class="q-ma-md"
+            v-model="aircraft_type"
+            :options="aircraft_types"
+            label="飞机类型" />
         </q-card-section>
 
         <q-separator />
 
         <q-card-actions align="right">
           <q-btn v-close-popup color="primary" label="取消" />
-          <q-btn v-close-popup color="primary" label="添加" @click="addAdmin" />
+          <q-btn v-close-popup color="primary" label="添加" @click="addAircraft" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -39,77 +69,103 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
+import { onMounted, ref, watch } from 'vue'
+import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
-
 const aircrafts = ref([])
-const aircraftSelected = ref([])
-const aircraftColumns = [
-  {
-    name: 'id',
-    required: true,
-    label: 'ID',
-    align: 'left',
-    field: 'id',
-    sortable: true
-  },
-  {
-    name: 'flightCount',
-    align: 'left',
-    label: '航班数量',
-    field: row => row.flights.length,
-    sortable: true
-  },
-  {
-    name: 'type',
-    align: 'left',
-    label: '飞机型号',
-    field: row => row.type.name,
-    sortable: true
-  },
-  {
-    name: 'seatCount',
-    align: 'left',
-    label: '座位数量',
-    field: row => JSON.parse(row.type.model).seat_number,
-    sortable: true
-  },
-]
-
-const getAirlineCode = () => {
-  // console.log($userStore.admin_type)
-  return $userStore.admin_type.slice(8)
-}
-
-const updateAirports = () => {
+const updateAircrafts = () => {
   // console.log(getAirlineCode())
-  const url = '/aircrafts/airline_code/' + getAirlineCode()
+  const url = '/aircrafts/airline_code/' + $userStore.admin_type.slice(8)
   api.get(url).then((res) => {
     aircrafts.value = res.data
-    console.log(res.data)
+    for (let aircraft of aircrafts.value) {
+      aircraft.type.model = JSON.parse(aircraft.type.model)
+    }
+    console.log(aircrafts.value)
   })
 }
 
-const addAircraftCard = ref(false)
+const cardAdd = ref(false)
+let aircraft_types = []
+const aircraft_type = ref([])
+
+const updateAircraftTypes = () => {
+  api.get('/aircraft_types').then((res) => {
+    aircraft_types = res.data
+    for (let aircraft_type of aircraft_types) {
+      aircraft_type.label = ' (' + aircraft_type.code + ') ' + aircraft_type.name
+      aircraft_type.value = aircraft_type.code
+    }
+    // console.log(aircraft_types)
+  })
+}
+
+const addAircraft = () => {
+  const airline_code = $userStore.admin_type.slice(8)
+  api.post('/aircrafts', {
+    airline_code: airline_code,
+    type_code: aircraft_type.value.code,
+  }).then((res) => {
+    $q.notify({
+      color: 'green-4',
+      textColor: 'white',
+      icon: 'cloud_done',
+      message: '添加成功!',
+    })
+    updateAircrafts()
+  }).catch((err) => {
+    $q.notify({
+      color: 'red-4',
+      textColor: 'white',
+      icon: 'cloud_done',
+      message: '添加失败!',
+    })
+  })
+}
+
+const confirm = (id) => {
+  $q.dialog({
+    title: '确认',
+    message: '你真的要删除吗?',
+    cancel: '取消',
+    ok: '确定',
+    persistent: true
+  }).onOk(() => {
+    api.delete('/aircrafts/id/' + id).then((res) => {
+      $q.notify({
+        color: 'green-4',
+        textColor: 'white',
+        icon: 'cloud_done',
+        message: '删除成功!',
+      })
+      updateAircrafts()
+    }).catch((err) => {
+      console.log(err)
+      $q.notify({
+        color: 'red-4',
+        textColor: 'white',
+        icon: 'cloud_done',
+        message: '删除失败!',
+      })
+    })
+  })
+}
 
 const updateAll = () => {
-  updateAirports()
+  updateAircrafts()
+  updateAircraftTypes()
 }
 onMounted(() => {
   updateAll()
 })
-// every 10s update
 setInterval(() => {
   updateAll()
-}, 1000 * 10)
+  // console.log(flights.value)
+}, 1000 * 10);
+
 
 </script>
-
-<style lang="scss">
-
-</style>

@@ -80,6 +80,10 @@ class Flight(Base):
     aircraft_id = Column(Integer, ForeignKey("aircrafts.id"))
     flight_type_id = Column(Integer, ForeignKey("flight_types.id"))
 
+    price0 = Column(Integer) # 经济舱
+    price1 = Column(Integer) # 商务舱
+    price2 = Column(Integer) # 头等舱
+
     aircraft = relationship("Aircraft", back_populates="flights")
     flight_type = relationship("FlightType", back_populates="flights")
     books = relationship("Book", back_populates="flight")
@@ -111,6 +115,7 @@ class Book(Base):
     flight_id = Column(Integer, ForeignKey("flights.id"))
     seat = Column(String)
     status = Column(String)
+    pay = Column(Integer)
 
     user = relationship("User", back_populates="books")
     flight = relationship("Flight", back_populates="books")
@@ -123,10 +128,11 @@ class BookHistory(Base):
     __tablename__ = "books_history"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    flight_id = Column(Integer, ForeignKey("flights.id"))
+    user_id = Column(Integer)
+    flight_id = Column(Integer)
     seat = Column(String)
     status = Column(String)
+    pay = Column(Integer)
 
     UniqueConstraint(flight_id, seat)
 
