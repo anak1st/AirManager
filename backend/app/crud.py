@@ -186,6 +186,14 @@ def get_book(db: Session, book_id: int):
     return db.query(models.Book).filter(models.Book.id == book_id).first()
 
 
+def create_book(db: Session, book: schemas.BookCreate):
+    db_book = models.Book(**book.dict())
+    db.add(db_book)
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
+
 def get_book_by_user(db: Session, user_id: int):
     return db.query(models.Book).filter(models.Book.user_id == user_id).all()
 

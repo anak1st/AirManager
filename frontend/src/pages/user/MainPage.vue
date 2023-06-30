@@ -1,7 +1,15 @@
 <template>
-  <q-page class="q-pa-lg">
-    <h5>User Main Page</h5>
-  </q-page>
+  <div class="bg-blue text-white text-center q-pa-md flex flex-center">
+    <div>
+      <div style="font-size: 30vh">
+        404
+      </div>
+
+      <div class="text-h2" style="opacity:.4">
+        Oops. Nothing here...
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>

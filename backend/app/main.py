@@ -235,7 +235,46 @@ def update_flight(flight_id: int, flight: schemas.FlightCreate, db: Session = De
         raise HTTPException(status_code=404, detail="Flight not found")
     return crud.update_flight(db=db, flight_id=flight_id, flight=flight)
 
-# ==================== Bookings ====================
+# ==================== Books ====================
+
+@app.get("/books/", response_model=list[schemas.Book])
+def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    books = crud.get_books(db, skip=skip, limit=limit)
+    return books
+
+
+@app.post("/books/", response_model=schemas.Book)
+def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
+    return crud.create_book(db=db, book=book)
+
+
+
+
+@app.get("/books/id/{book_id}", response_model=schemas.Book)
+def read_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return db_book
+
+
+@app.get("/books/user/{user_id}", response_model=list[schemas.Book])
+def read_book_by_user(user_id: int, db: Session = Depends(get_db)):
+    user = crud.get_user(db, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db_book = crud.get_book_by_user(db, user_id=user_id)
+    return db_book
+
+
+@app.get("/books/flight/{flight_id}", response_model=list[schemas.Book])
+def read_book_by_flight(flight_id: int, db: Session = Depends(get_db)):
+    flight = crud.get_flight(db, flight_id=flight_id)
+    if flight is None:
+        raise HTTPException(status_code=404, detail="Flight not found")
+    db_book = crud.get_book_by_flight(db, flight_id=flight_id)
+    return db_book
+
 
 # ==================== Users ====================
 

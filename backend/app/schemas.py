@@ -70,13 +70,19 @@ class FlightBase(BaseModel):
 class BookBase(BaseModel):
     user_id: int
     flight_id: int
-    seat: int
+    seat: str
     status: str
     pay: int
+
+    class Config:
+        orm_mode = True
 
 
 class UserBase(BaseModel):
     email: str
+
+    class Config:
+        orm_mode = True
 
 
 class UserMutable(BaseModel):
