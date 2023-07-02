@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-blue text-white text-center q-pa-md flex flex-center">
+  <div
+    class="bg-blue text-white text-center q-pa-md flex flex-center"
+  >
     <div>
       <div style="font-size: 30vh">
         404

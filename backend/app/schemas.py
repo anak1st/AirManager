@@ -90,8 +90,17 @@ class UserMutable(BaseModel):
     fullname: str
     phone: str
     address: str
+
+    class Config:
+        orm_mode = True
+
+
+class UserMutableHigh(BaseModel):
     money: int
     points: int
+
+    class Config:
+        orm_mode = True
 
 
 # ==================== Create ====================
@@ -211,6 +220,14 @@ class Flight(FlightBase):
         orm_mode = True
 
 
+class FlightWithoutBooks(FlightBase):
+    id: int
+
+    # ORM
+    aircraft: AircraftWithoutFlights
+    flight_type: FlightTypeWithoutFlights
+
+
 class User(UserBase):
     id: int
     username: str
@@ -228,14 +245,12 @@ class User(UserBase):
 
 
 
-
-
 class Book(BookBase):
     id: int
 
     # ORM
     user: UserBase
-    flight: FlightBase
+    flight: FlightWithoutBooks
 
     class Config:
         orm_mode = True
@@ -272,3 +287,6 @@ class UserLogin(UserBase):
 
 class AdminLogin(AdminBase):
     password: str
+
+    class Config:
+        orm_mode = True

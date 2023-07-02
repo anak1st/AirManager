@@ -53,8 +53,8 @@
         </q-item-section>
 
         <q-item-section side>
-          <q-chip :color="flight.status === 'normal' ? 'green' : 'red'" text-color="white" icon="alarm" >
-            <q-item-label>{{ getStatus(flight.status) }}</q-item-label>
+          <q-chip :color="getStatus(flight.status, flight.time_departure).color" text-color="white" icon="alarm" >
+            <q-item-label>{{ getStatus(flight.status, flight.time_departure).status }}</q-item-label>
           </q-chip>
         </q-item-section>
 
@@ -69,6 +69,8 @@
         <q-card-section>
           <div class="q-my-md text-h6 text-center"> 购买 </div>
           <div> {{ itemsCount }} </div>
+
+
           <q-virtual-scroll
             :items="List"
             virtual-scroll-horizontal
@@ -106,10 +108,27 @@
 <script setup>
 import { date, useQuasar } from 'quasar';
 const $q = useQuasar()
+
 import { onMounted, ref } from 'vue'
 import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
+
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
 
 const flights = ref([])
 
@@ -138,13 +157,17 @@ const getCostTime = (time_departure, time_arrival) => {
   return hour + "小时" + minute + "分钟"
 }
 
-const getStatus = (status) => {
-  if (status === 'cancel') {
-    return '取消'
-  } else if (status === 'delay') {
-    return '延误'
+const getStatus = (status, time_departure) => {
+  if (new Date() > new Date(time_departure)) {
+    return {status: '已起飞', color: 'grey'}
   }
-  return '准点'
+
+  if (status === 'cancel') {
+    return {status: '已取消', color: 'red'}
+  } else if (status === 'delay') {
+    return {status: '延误', color: 'yellow'}
+  }
+  return {status: '准点', color: 'green'}
 }
 
 const bookFlightsCard = ref(false)
@@ -213,11 +236,7 @@ const updateBooks = async () => {
 
 const buyFlights = () => {
   if (selectSeat.value === '') {
-    $q.notify({
-      message: '请选择座位',
-      color: 'red',
-      icon: 'close'
-    })
+    notify_error('请选择座位')
     return
   }
 
@@ -225,21 +244,11 @@ const buyFlights = () => {
   const seat_type = flight.aircraft.type.model.seat[selectSeat.value].type
 
   let price = 0
-  if (seat_type === 0) {
-    price = flight.price0
-  }
-  if (seat_type === 1) {
-    price = flight.price1
-  }
-  if (seat_type === 2) {
-    price = flight.price2
-  }
+  if (seat_type === 0) { price = flight.price0 }
+  if (seat_type === 1) { price = flight.price1 }
+  if (seat_type === 2) { price = flight.price2 }
   if (price === 0) {
-    $q.notify({
-      message: '价格错误',
-      color: 'red',
-      icon: 'close'
-    })
+    notify_error('价格错误')
     return
   }
 
@@ -253,18 +262,10 @@ const buyFlights = () => {
   }
 
   api.post(url, data).then((res) => {
-    $q.notify({
-      message: '购买成功',
-      color: 'green',
-      icon: 'check'
-    })
+    notify_sucess('购买成功')
     bookFlightsCard.value = false
   }).catch((err) => {
-    $q.notify({
-      message: '购买失败',
-      color: 'red',
-      icon: 'close'
-    })
+    notify_error('购买失败')
     console.log(err)
   })
 }

@@ -245,9 +245,10 @@ def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.post("/books/", response_model=schemas.Book)
 def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
+    user = crud.update_user_money(db=db, user_id=book.user_id, money=-book.pay)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Good User not found")
     return crud.create_book(db=db, book=book)
-
-
 
 
 @app.get("/books/id/{book_id}", response_model=schemas.Book)
@@ -258,12 +259,22 @@ def read_book(book_id: int, db: Session = Depends(get_db)):
     return db_book
 
 
+@app.delete("/books/id/{book_id}", response_model=schemas.Book)
+def delete_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    book = schemas.Book.from_orm(db_book)
+    crud.update_user_money(db=db, user_id=book.user_id, money=book.pay)
+    return crud.delete_book(db=db, book_id=book_id)
+
+
 @app.get("/books/user/{user_id}", response_model=list[schemas.Book])
-def read_book_by_user(user_id: int, db: Session = Depends(get_db)):
+def read_books_by_user(user_id: int, db: Session = Depends(get_db)):
     user = crud.get_user(db, user_id=user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    db_book = crud.get_book_by_user(db, user_id=user_id)
+    db_book = crud.get_books_by_user(db, user_id=user_id)
     return db_book
 
 
@@ -272,7 +283,22 @@ def read_book_by_flight(flight_id: int, db: Session = Depends(get_db)):
     flight = crud.get_flight(db, flight_id=flight_id)
     if flight is None:
         raise HTTPException(status_code=404, detail="Flight not found")
-    db_book = crud.get_book_by_flight(db, flight_id=flight_id)
+    db_book = crud.get_books_by_flight(db, flight_id=flight_id)
+    return db_book
+
+
+@app.get("/books_history/", response_model=list[schemas.Book])
+def read_books_history(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    books_history = crud.get_books_history(db, skip=skip, limit=limit)
+    return books_history
+
+
+@app.get("/books_history/user/{user_id}", response_model=list[schemas.Book])
+def read_books_history_by_user(user_id: int, db: Session = Depends(get_db)):
+    user = crud.get_user(db, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db_book = crud.get_books_history_by_user(db, user_id=user_id)
     return db_book
 
 
@@ -330,6 +356,30 @@ def update_user(user_id: int, user: schemas.UserMutable, db: Session = Depends(g
     return crud.update_user(db=db, user_id=user_id, user=user)
 
 
+
+@app.get("/users/id/{user_id}/plan/{plan_id}", response_model=schemas.User)
+def buy_plan(user_id: int, plan_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    plans = [0, 36, 74, 153, 392, 828]
+    if plan_id > len(plans):
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    if plan_id == 0:
+        user = schemas.User.from_orm(db_user)
+        db_user = crud.update_user_money(db=db, user_id=user_id, money=-user.money)
+    else:
+        plan = plans[plan_id]
+        db_user = crud.update_user_money(db=db, user_id=user_id, money=plan)
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User Error")
+    
+    return db_user
+
+
 # ==================== Admins ====================
 
 @app.get("/admins/", response_model=list[schemas.Admin])
@@ -344,8 +394,9 @@ def login_admin(admin: schemas.AdminLogin, db: Session = Depends(get_db)):
     db_admin = crud.get_admin_by_email(db, email=admin.email)
     if db_admin is None:
         raise HTTPException(status_code=404, detail="Admin not found")
-    if db_admin.password != admin.password: # type: ignore
-        print(db_admin.password, admin.password)
+
+    admin = schemas.AdminLogin.from_orm(db_admin)
+    if admin.password != admin.password:
         raise HTTPException(status_code=400, detail="Incorrect password")
     return db_admin
 

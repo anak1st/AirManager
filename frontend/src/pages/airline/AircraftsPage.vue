@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page >
     <q-list bordered>
       <q-item
         v-for="aircraft in aircrafts"
@@ -85,7 +85,7 @@ const updateAircrafts = () => {
     for (let aircraft of aircrafts.value) {
       aircraft.type.model = JSON.parse(aircraft.type.model)
     }
-    console.log(aircrafts.value)
+    // console.log(aircrafts.value)
   })
 }
 

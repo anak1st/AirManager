@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="q-my-md text-h4 text-center"> 钱包余额 {{ money }} Fly币 </div>
+    <div class="q-my-md text-h4 text-center"> 钱包余额 {{ money }} 元 </div>
     <div class="q-my-md text-h6 text-center"> 选择下面的套餐进行充值 </div>
     <div class="q-pa-md row items-start q-gutter-md">
       <q-card flat bordered class="my-card" v-for="gitcard of giftCards" :key="gitcard">
@@ -15,7 +15,7 @@
               返利 {{ gitcard.moneyadd }} 元
             </q-chip>
           </div>
-          <div>获得 {{ gitcard.prise + gitcard.moneyadd }} Fly币 </div>
+          <div> 获得 {{ gitcard.prise + gitcard.moneyadd }} 元 </div>
 
         </q-card-section>
 
@@ -26,7 +26,7 @@
             color="primary"
             icon="local_grocery_store"
             label="充值"
-            @click="chargeConfirm(gitcard.prise + gitcard.moneyadd)"
+            @click="chargeConfirm(gitcard.label)"
           />
         </q-card-section>
       </q-card>
@@ -45,7 +45,12 @@ const $q = useQuasar()
 const money = ref(0)
 
 const giftCards = [
-{
+  {
+    label: 0,
+    prise: -99999999,
+    moneyadd: 0,
+  },
+  {
     label: 1,
     prise: 32,
     moneyadd: 4,
@@ -79,7 +84,7 @@ const updateMoney = () => {
   })
 }
 
-const chargeConfirm = (moneyChange) => {
+const chargeConfirm = (plan) => {
   $q.dialog({
     title: '充值',
     message: '确认充值吗?',
@@ -87,11 +92,8 @@ const chargeConfirm = (moneyChange) => {
     cancel: '取消',
     persistent: true
   }).onOk(() => {
-    const url = '/users/id/' + $userStore.id
+    const url = '/users/id/' + $userStore.id + '/plan/' + plan
     api.get(url).then((res) => {
-      const resdata = res.data
-      resdata.money += moneyChange
-      api.put(url, resdata).then((res) => {
         $q.notify({
           message: '充值成功',
           color: 'positive',
@@ -108,15 +110,6 @@ const chargeConfirm = (moneyChange) => {
           position: 'top'
         })
       })
-    }).catch((err) => {
-      console.log(err)
-      $q.notify({
-        message: '用户信息获取失败',
-        color: 'negative',
-        icon: 'warning',
-        position: 'top'
-      })
-    })
   })
 }
 

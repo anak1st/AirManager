@@ -34,7 +34,7 @@
             {{ getCostTime(flight.time_departure, flight.time_arrival) }}
           </q-item-label>
           <q-item-label>
-            <q-img src="~assets/arrow.png"  />
+            <q-img src="~assets/arrow4.png"  />
           </q-item-label>
         </q-item-section>
 
@@ -137,8 +137,7 @@
 
           <q-step
             :name="2"
-            title="2"
-            caption="Optional"
+            title="价格信息"
             icon="create_new_folder"
             :done="step > 2"
           >
@@ -153,7 +152,7 @@
 
           <q-step
             :name="3"
-            title="3"
+            title="完成"
             icon="add_comment"
           >
             确认{{  }}航班吗？
@@ -218,7 +217,7 @@ const updateAircrafts = () => {
       aircraft.label = ' (' + aircraft.id + ') ' + aircraft.type.name
       aircraft.value = aircraft.id
     }
-    console.log(aircrafts)
+    // console.log(aircrafts)
   })
 }
 

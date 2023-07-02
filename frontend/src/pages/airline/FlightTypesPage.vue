@@ -9,15 +9,15 @@
 
         v-ripple
       >
-        <q-item-section class="col-1">
+        <q-item-section class="">
           <q-item-label>{{ flight_type.airline_code + " " + flight_type.id }}</q-item-label>
         </q-item-section>
 
-        <q-item-section class="col-2 items-end">
+        <q-item-section class=" items-end">
           <q-item-label>{{ flight_type.airport_departure.name }}</q-item-label>
         </q-item-section>
 
-        <q-item-section class="q-px-md col-2">
+        <q-item-section class="q-px-md ">
           <q-item-label caption>
             {{ "lat: " + String(flight_type.airport_departure.lat).slice(0, 10) }}
           </q-item-label>
@@ -26,16 +26,16 @@
           </q-item-label>
         </q-item-section>
 
-        <q-item-section class="col-1">
+        <q-item-section class="">
           <q-item-label caption>
             {{ flight_type.distence }}
           </q-item-label>
           <q-item-label>
-            <q-img src="~assets/arrow.png"  />
+            <q-img src="~assets/arrow4.png"  />
           </q-item-label>
         </q-item-section>
 
-        <q-item-section class="q-px-md col-2 items-end">
+        <q-item-section class="q-px-md items-end">
           <q-item-label caption>
             {{ "lat: " + String(flight_type.airport_arrival.lat).slice(0, 10) }}
           </q-item-label>
@@ -44,11 +44,11 @@
           </q-item-label>
         </q-item-section>
 
-        <q-item-section class="col-2">
+        <q-item-section class="">
           <q-item-label>{{ flight_type.airport_arrival.name }}</q-item-label>
         </q-item-section>
 
-        <q-item-section class="col-1" side>
+        <q-item-section class="" side>
           <q-btn round color="red" icon="delete" @click="confirm(flight_type.id)" />
         </q-item-section>
       </q-item>

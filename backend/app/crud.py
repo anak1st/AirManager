@@ -162,9 +162,7 @@ def delete_flight(db: Session, flight_id: int):
 
 
 def update_flight(db: Session, flight_id: int, flight: schemas.FlightCreate):
-    db_flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
-
-    res = db.query(models.Flight).filter(models.Flight.id == flight_id).update({
+    db_flight = db.query(models.Flight).filter(models.Flight.id == flight_id).update({
         models.Flight.aircraft_id: flight.aircraft_id,
         models.Flight.flight_type_id: flight.flight_type_id,
         models.Flight.time_arrival: flight.time_arrival,
@@ -172,7 +170,6 @@ def update_flight(db: Session, flight_id: int, flight: schemas.FlightCreate):
         models.Flight.status: flight.status
     }, synchronize_session=False)
     db.commit()
-    db.refresh(db_flight)
     return db_flight
 
 # ==================== Books ====================
@@ -180,6 +177,10 @@ def update_flight(db: Session, flight_id: int, flight: schemas.FlightCreate):
 
 def get_books(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Book).offset(skip).limit(limit).all()
+
+
+def get_books_history(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.BookHistory).offset(skip).limit(limit).all()
 
 
 def get_book(db: Session, book_id: int):
@@ -194,12 +195,28 @@ def create_book(db: Session, book: schemas.BookCreate):
     return db_book
 
 
-def get_book_by_user(db: Session, user_id: int):
+def delete_book(db: Session, book_id: int):
+    db_book = db.query(models.Book).filter(models.Book.id == book_id).first()
+    book = schemas.BookCreate.from_orm(db_book)
+    book.pay = 0
+    db_book_history = models.BookHistory(**book.dict())
+    
+    db.add(db_book_history)
+    db.delete(db_book)
+    db.commit()
+    return db_book
+
+
+def get_books_by_user(db: Session, user_id: int):
     return db.query(models.Book).filter(models.Book.user_id == user_id).all()
 
 
-def get_book_by_flight(db: Session, flight_id: int):
+def get_books_by_flight(db: Session, flight_id: int):
     return db.query(models.Book).filter(models.Book.flight_id == flight_id).all()
+
+
+def get_books_history_by_user(db: Session, user_id: int):
+    return db.query(models.BookHistory).filter(models.BookHistory.user_id == user_id).all()
 
 
 # ==================== Users ====================
@@ -232,23 +249,35 @@ def delete_user(db: Session, user_id: int):
 
 
 def update_user(db: Session, user_id: int, user: schemas.UserMutable):
-    db_user = db.query(models.User).filter(models.User.id == user_id).update({
+    db.query(models.User).filter(models.User.id == user_id).update({
         models.User.username: user.username,
         models.User.phone: user.phone,
         models.User.fullname: user.fullname,
         models.User.address: user.address,
-        models.User.money: user.money,
-        models.User.points: user.points
     }, synchronize_session=False)
 
     db.commit()
-    db.refresh(db_user)
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
     return db_user
 
 
+def update_user_money(db: Session, user_id: int, money: int):
+    db_user = db.query(models.User).filter(models.User.id == user_id, 
+                                           models.User.money + money >= 0).first()
+    if db_user is None:
+        print("User not found or not enough money")
+        return None
+
+    db.query(models.User).filter(models.User.id == user_id).update({
+        models.User.money: models.User.money + money
+    }, synchronize_session=False)
+
+    db.commit()
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    return db_user
+
 
 # ==================== Admins ====================
-
 
 def get_admins(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Admin).offset(skip).limit(limit).all()

@@ -123,6 +123,21 @@ class Book(Base):
     UniqueConstraint(flight_id, seat)
 
 
+
+class BookHistory(Base):
+    __tablename__ = "books_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    flight_id = Column(Integer, ForeignKey("flights.id"))
+    seat = Column(String)
+    status = Column(String)
+    pay = Column(Integer)
+
+    user = relationship("User")
+    flight = relationship("Flight")
+
+
 class Admin(Base):
     __tablename__ = "admins"
 
