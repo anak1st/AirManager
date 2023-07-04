@@ -204,7 +204,6 @@ const updateBooks = () => {
     const backups = books.value
     books.value = res.data
     showMore.value = []
-    // console.log(books.value)
     for (const book of books.value) {
       const backup = backups.find((backup) => backup.id == book.id)
       if (backup) {
@@ -257,7 +256,6 @@ const confirm = (id) => {
     return
   }
 
-
   $q.dialog({
     title: '删除订单',
     message: '确定删除订单吗？',
@@ -282,7 +280,6 @@ const updateBooksHistory = () => {
   return api.get(url).then((res) => {
     books_history.value = res.data
     showMore.value = []
-    // console.log(books.value)
     books_history.value.sort((a, b) => {
       return new Date(a.flight.time_departure) - new Date(b.flight.time_departure)
     })

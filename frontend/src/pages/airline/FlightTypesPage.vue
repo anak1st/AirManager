@@ -212,7 +212,6 @@ onMounted(() => {
 })
 setInterval(() => {
   updateAll()
-  // console.log(flights.value)
 }, 1000 * 10);
 
 

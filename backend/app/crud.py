@@ -237,16 +237,23 @@ def create_book(db: Session, book: schemas.BookCreate):
     return db_book
 
 
-def delete_book(db: Session, book_id: int):
+def delete_book(db: Session, book_id: int, move_to_history: bool = True):
     db_book = db.query(models.Book).filter(models.Book.id == book_id).first()
     book = schemas.BookCreate.from_orm(db_book)
     book.pay = 0
-    db_book_history = models.BookHistory(**book.dict())
-    
-    db.add(db_book_history)
+    if move_to_history:
+        db_book_history = models.BookHistory(**book.dict())
+        db.add(db_book_history)
     db.delete(db_book)
     db.commit()
     return db_book
+
+
+def delete_book_history(db: Session, book_id: int):
+    db_book_history = db.query(models.BookHistory).filter(models.BookHistory.id == book_id).first()
+    db.delete(db_book_history)
+    db.commit()
+    return db_book_history
 
 
 def get_books_by_user(db: Session, user_id: int):
@@ -268,6 +275,8 @@ def get_books_num_by_flight(db: Session, flight_id: int):
 def get_books_pay_by_flight(db: Session, flight_id: int):
     cursor = db.query(func.sum(models.Book.pay)).filter(models.Book.flight_id == flight_id)
     total = cursor.scalar()
+    if total is None:
+        total = 0
     return total
 
 
@@ -280,6 +289,8 @@ def get_books_pay_by_airline_code(db: Session, airline_code: str):
     flight_ids = [flight.id for flight in get_flights_by_airline_code(db, airline_code)]
     cursor = db.query(func.sum(models.Book.pay)).filter(models.Book.flight_id.in_(flight_ids))
     total = cursor.scalar()
+    if total is None:
+        total = 0
     return total
 
 
@@ -322,7 +333,12 @@ def delete_user(db: Session, user_id: int):
     res = get_books_by_user(db, user_id)
     for r in res:
         book = schemas.Book.from_orm(r)
-        delete_book(db, book.id)
+        delete_book(db, book.id, False)
+
+    res = get_books_history_by_user(db, user_id)
+    for r in res:
+        book = schemas.Book.from_orm(r)
+        delete_book_history(db, book.id)
 
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     db.delete(db_user)

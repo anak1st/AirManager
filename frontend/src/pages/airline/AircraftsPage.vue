@@ -94,13 +94,11 @@ const notify_error = (message) => {
 
 const aircrafts = ref([])
 const updateAircrafts = () => {
-  // console.log(getAirlineCode())
   const url = '/aircrafts/airline_code/' + $userStore.admin_type.slice(8)
   api.get(url).then((res) => {
     aircrafts.value = res.data
     for (let aircraft of aircrafts.value) {
       aircraft.type.model = JSON.parse(aircraft.type.model)
-      console.log(aircraft.type.model)
       aircraft.type.model.seat_count0 = 0
       aircraft.type.model.seat_count1 = 0
       aircraft.type.model.seat_count2 = 0
@@ -115,7 +113,6 @@ const updateAircrafts = () => {
         }
       }
     }
-    // console.log(aircrafts.value)
   })
 }
 
@@ -130,7 +127,6 @@ const updateAircraftTypes = () => {
       aircraft_type.label = ' (' + aircraft_type.code + ') ' + aircraft_type.name
       aircraft_type.value = aircraft_type.code
     }
-    // console.log(aircraft_types)
   })
 }
 
@@ -174,7 +170,6 @@ onMounted(() => {
 })
 setInterval(() => {
   updateAll()
-  // console.log(flights.value)
 }, 1000 * 10);
 
 

@@ -34,12 +34,12 @@
             return `${firstRowIndex} - ${endRowIndex} / ${totalRowsNumber}`
           }"
         />
-        <q-btn-group class="q-ma-md">
+        <!-- <q-btn-group class="q-ma-md">
           <q-btn color="accent" icon="card_giftcard" label="添加" />
           <q-btn color="accent" icon="create" label="删除">
             机场: {{ airportSelected.length > 0 ? airportSelected[0].name : "无" }}
           </q-btn>
-        </q-btn-group>
+        </q-btn-group> -->
       </q-tab-panel>
 
       <q-tab-panel name="airportAdmins">
@@ -176,7 +176,6 @@ const addAdmin = () => {
 
   const code = airports.value.find((it) => it.name === addAdminName.value).code
   const admin_type = 'Airport ' + code
-  console.log(admin_type)
   api.post('/admins/', {
     username: addAdminName.value,
     admin_type: admin_type,

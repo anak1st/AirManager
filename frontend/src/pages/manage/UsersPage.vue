@@ -25,7 +25,7 @@
         flat bordered
         :rows="users"
         :columns="userColumns"
-        row-key="name"
+        row-key="id"
         selection="single"
         v-model:selected="userSelected"
         rows-per-page-label="每页行数"
@@ -38,7 +38,7 @@
       />
       <q-btn-group class="q-my-md">
         <!-- <q-btn color="accent" icon="card_giftcard" label="添加" /> -->
-        <q-btn color="accent" icon="create" label="删除" @click="deleteUser = true">
+        <q-btn color="accent" icon="create" label="删除" @click="deleteUser">
           : {{ getSelectedUser() }}
         </q-btn>
       </q-btn-group>
@@ -171,11 +171,12 @@ const deleteUser = () => {
   $q.dialog({
     title: '删除用户',
     message: '确定删除用户 ' + getSelectedUser() + ' 吗？',
-
-    cancel: true,
+    ok: '确定',
+    cancel: '取消',
     persistent: true
   }).onOk(() => {
-    api.delete('/users/' + getSelectedUser()).then((res) => {
+    const id = userSelected.value[0].id
+    api.delete('/users/id/' + id).then((res) => {
       notify_sucess('删除成功')
       updateUsers()
     }).catch((err) => {

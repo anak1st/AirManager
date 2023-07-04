@@ -182,7 +182,6 @@ const updateFlights = () => {
 
   const airport_code_departure = airport_departure.value.code
   const airport_code_arrival = airport_arrival.value.code
-  // console.log(airport_code_departure, airport_code_arrival)
   const url = '/flights/airport/'
   api.get(url, {
     params: {
@@ -304,7 +303,7 @@ const initList = (seat, books) => {
 
 const selectSeat = ref('')
 const updateBooks = async () => {
-  const url = '/books/flight/' + flight_id.value
+  const url = '/books/flight_id/' + flight_id.value
   let books = []
   await api.get(url).then((res) => {
     books = res.data
@@ -362,6 +361,7 @@ const buyFlights = () => {
 
   api.post(url, data).then((res) => {
     notify_sucess('购买成功')
+    updateAll()
     bookFlightsCard.value = false
   }).catch((err) => {
     notify_error('购买失败')

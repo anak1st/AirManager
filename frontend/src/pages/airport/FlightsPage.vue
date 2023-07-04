@@ -190,10 +190,16 @@ const cardStatus = ref("")
 
 const clickModify = (id) => {
   modify_id = id
-  card.value = true
+
   cardStatus.value = "修改"
 
   const flight = flights.value.filter((flight) => flight.id === id)[0]
+
+  if (getStatus(flight.status, flight.time_departure).status === '已起飞') {
+    notify_error('已起飞的航班无法修改')
+    return
+  }
+  card.value = true
 
   time_departure.value = date.formatDate(flight.time_departure, 'YYYY-MM-DD HH:mm')
   time_arrival.value = date.formatDate(flight.time_arrival, 'YYYY-MM-DD HH:mm')
@@ -215,7 +221,6 @@ const confirm = () => {
     time_arrival: time_arrival.value,
     status: group.value,
   }
-  console.log(data)
   api.put(url, data).then((res) => {
     updateFlights()
     card.value = false

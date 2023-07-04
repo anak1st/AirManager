@@ -248,6 +248,8 @@ const updateSale = () => {
   const airline_code = $userStore.admin_type.slice(8)
   api.get('/books/num/airline_code/' + airline_code).then((res) => {
     sale_num.value = res.data
+  }).catch((err) => {
+    console.log(err)
   })
   api.get('/books/pay/airline_code/' + airline_code).then((res) => {
     sale.value = res.data
@@ -432,7 +434,6 @@ const confirmModify = () => {
     price1: price1.value * 100,
     price2: price2.value * 100
   }
-  console.log(data)
   api.put(url, data).then((res) => {
     updateAircrafts()
     updateFlights()
