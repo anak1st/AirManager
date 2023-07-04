@@ -66,7 +66,7 @@
          <q-item-section side>
             <q-item-label>
               <q-chip icon="payment">
-                已支付 {{ book.pay }} 元
+                已支付 {{ book.pay / 100 }} 元
               </q-chip>
             </q-item-label>
           </q-item-section>
@@ -152,7 +152,7 @@
          <q-item-section side>
             <q-item-label>
               <q-chip icon="payment">
-                 {{ book.pay > 0 ? "已支付 " + book.pay + " 元" : "已退款" }}
+                 {{ book.pay > 0 ? "已支付 " + book.pay / 100 + " 元" : "已退款" }}
               </q-chip>
             </q-item-label>
           </q-item-section>
@@ -236,19 +236,28 @@ const getCostTime = (time_departure, time_arrival) => {
 }
 
 const getStatus = (status, time_departure) => {
+  if (status === 'cancel') {
+    return {status: '已取消', color: 'red'}
+  }
   if (new Date() > new Date(time_departure)) {
     return {status: '已起飞', color: 'grey'}
   }
-
-  if (status === 'cancel') {
-    return {status: '已取消', color: 'red'}
-  } else if (status === 'delay') {
-    return {status: '延误', color: 'yellow'}
+  if (status === 'delay') {
+    return {status: '延误', color: 'yellow-8'}
   }
   return {status: '准点', color: 'green'}
 }
 
 const confirm = (id) => {
+  const book = books.value.find((book) => book.id === id)
+  const status = book.flight.status
+  const time_departure = book.flight.time_departure
+  if (status !== 'cancel' && new Date() > new Date(time_departure)) {
+    notify_error('该航班已起飞')
+    return
+  }
+
+
   $q.dialog({
     title: '删除订单',
     message: '确定删除订单吗？',
@@ -282,14 +291,17 @@ const updateBooksHistory = () => {
   })
 }
 
-
-onMounted(() => {
+const updateAll = () => {
   updateBooks()
   updateBooksHistory()
+}
+
+onMounted(() => {
+  updateAll()
 })
 
 setInterval(() => {
-  updateBooks()
+  updateAll()
 }, 1000 * 60);
 
 </script>

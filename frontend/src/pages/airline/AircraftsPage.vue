@@ -18,15 +18,15 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+          <q-item-label> 经济舱座位数量:{{ aircraft.type.model.seat_count0 }}</q-item-label>
         </q-item-section>
 
         <q-item-section>
-          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+          <q-item-label> 商务舱座位数量:{{ aircraft.type.model.seat_count1 }}</q-item-label>
         </q-item-section>
 
         <q-item-section>
-          <q-item-label> 座位数量:{{ Object.keys(aircraft.type.model.seat).length }}</q-item-label>
+          <q-item-label> 头等舱座位数量:{{ aircraft.type.model.seat_count2 }}</q-item-label>
         </q-item-section>
 
         <q-item-section side>
@@ -76,6 +76,22 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
+
 const aircrafts = ref([])
 const updateAircrafts = () => {
   // console.log(getAirlineCode())
@@ -84,6 +100,20 @@ const updateAircrafts = () => {
     aircrafts.value = res.data
     for (let aircraft of aircrafts.value) {
       aircraft.type.model = JSON.parse(aircraft.type.model)
+      console.log(aircraft.type.model)
+      aircraft.type.model.seat_count0 = 0
+      aircraft.type.model.seat_count1 = 0
+      aircraft.type.model.seat_count2 = 0
+      for (let key in aircraft.type.model.seat) {
+        const seat = aircraft.type.model.seat[key]
+        if (seat.type === 0) {
+          aircraft.type.model.seat_count0 += 1
+        } else if (seat.type === 1) {
+          aircraft.type.model.seat_count1 += 1
+        } else if (seat.type === 2) {
+          aircraft.type.model.seat_count2 += 1
+        }
+      }
     }
     // console.log(aircrafts.value)
   })
@@ -110,20 +140,10 @@ const addAircraft = () => {
     airline_code: airline_code,
     type_code: aircraft_type.value.code,
   }).then((res) => {
-    $q.notify({
-      color: 'green-4',
-      textColor: 'white',
-      icon: 'cloud_done',
-      message: '添加成功!',
-    })
+    notify_sucess('添加成功!')
     updateAircrafts()
   }).catch((err) => {
-    $q.notify({
-      color: 'red-4',
-      textColor: 'white',
-      icon: 'cloud_done',
-      message: '添加失败!',
-    })
+    notify_error('添加失败!')
   })
 }
 
@@ -136,21 +156,11 @@ const confirm = (id) => {
     persistent: true
   }).onOk(() => {
     api.delete('/aircrafts/id/' + id).then((res) => {
-      $q.notify({
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '删除成功!',
-      })
+      notify_sucess('删除成功!')
       updateAircrafts()
     }).catch((err) => {
       console.log(err)
-      $q.notify({
-        color: 'red-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '删除失败!',
-      })
+      notify_error('删除失败!')
     })
   })
 }

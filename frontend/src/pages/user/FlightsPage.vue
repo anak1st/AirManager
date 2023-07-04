@@ -1,12 +1,25 @@
 <template>
   <q-page>
     <q-list bordered>
+      <q-item class="q-my-sm row">
+        <q-item-section>
+          <q-select filled v-model="airport_departure" :options="airports" label="出发" />
+        </q-item-section>
+        <q-item-section>
+          <q-select filled v-model="airport_arrival" :options="airports" label="到达" />
+        </q-item-section>
+        <q-item-section style="max-width: 150px;">
+          <q-btn label="展示所有航班" @click="showall = !showall" />
+        </q-item-section>
+      </q-item>
       <q-item
         v-for="flight in flights"
         :key="flight.id"
         class="q-my-sm row"
         clickable
-
+        v-show="showall
+             || getStatus(flight.status, flight.time_departure).status === '延误'
+             || getStatus(flight.status, flight.time_departure).status === '准点'"
         v-ripple
       >
         <q-item-section avatar>
@@ -47,7 +60,7 @@
         <q-item-section side>
           <q-item-label>
             <q-chip color="red" text-color="white" icon="directions">
-              起步价 {{ flight.price0 }}
+              起步价 {{ flight.price0 / 100 }}
             </q-chip>
           </q-item-label>
         </q-item-section>
@@ -65,12 +78,22 @@
     </q-list>
     <q-dialog v-model="bookFlightsCard" >
       <q-card class="my-card" style="width: 800px">
-
-        <q-card-section>
           <div class="q-my-md text-h6 text-center"> 购买 </div>
-          <div> {{ itemsCount }} </div>
+        <q-card-section class="column items-start">
+
+          <q-chip icon="airline_seat_recline_extra" color="green-4">
+            <div> 经济舱价格 {{ price[0] }}, 剩余 {{ seatTypes[0] }} </div>
+          </q-chip>
+          <q-chip icon="airline_seat_recline_extra" color="blue-4">
+            <div> 商务舱价格 {{ price[1] }}, 剩余 {{ seatTypes[1] }} </div>
+          </q-chip>
+          <q-chip icon="airline_seat_recline_extra" color="yellow-4">
+            <div> 头等舱价格 {{ price[2] }}, 剩余 {{ seatTypes[2] }} </div>
+          </q-chip>
 
 
+        </q-card-section>
+        <q-card-section>
           <q-virtual-scroll
             :items="List"
             virtual-scroll-horizontal
@@ -94,7 +117,14 @@
           </q-virtual-scroll>
         </q-card-section>
         <q-card-section>
-          <div>你选择了 {{ selectSeat }}</div>
+          <q-chip color="teal" text-color="white" icon="bookmark">
+            <div> 你选择了 {{ selectSeat }} </div>
+          </q-chip>
+          <span class="text-subtitle1">
+            钱包余额 <span class="text-red">{{ money / 100 }}</span>;
+            目前积分 <span class="text-orange">{{ points / 100 }}</span>,
+            VIP 等级为 <span class="text-orange">{{ getVip() }}</span>
+          </span>
         </q-card-section>
         <q-card-section align="right">
           <q-btn class="q-mx-sm text-black" label="取消"  @click="bookFlightsCard = false" />
@@ -109,7 +139,7 @@
 import { date, useQuasar } from 'quasar';
 const $q = useQuasar()
 
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
@@ -130,18 +160,46 @@ const notify_error = (message) => {
   });
 }
 
+const showall = ref(false)
 const flights = ref([])
 
+const airport_departure = ref([])
+const airport_arrival = ref([])
 const updateFlights = () => {
-  const url = '/flights/'
-  api.get(url).then((res) => {
+  if (airport_departure.value.length === 0 || airport_arrival.value.length === 0) {
+    const url = '/flights/'
+    api.get(url).then((res) => {
+      flights.value = res.data
+      for (let flight of flights.value) {
+        flight.aircraft.type.model = JSON.parse(flight.aircraft.type.model)
+      }
+      flights.value.sort((a, b) => {
+        return a.time_departure > b.time_departure ? 1 : -1
+      })
+    })
+    return
+  }
+
+  const airport_code_departure = airport_departure.value.code
+  const airport_code_arrival = airport_arrival.value.code
+  // console.log(airport_code_departure, airport_code_arrival)
+  const url = '/flights/airport/'
+  api.get(url, {
+    params: {
+      airport_code_departure: airport_code_departure,
+      airport_code_arrival: airport_code_arrival,
+    }
+  }).then((res) => {
     flights.value = res.data
     for (let flight of flights.value) {
       flight.aircraft.type.model = JSON.parse(flight.aircraft.type.model)
-      // console.log(flight)
     }
   })
 }
+
+watch([airport_departure, airport_arrival], () => {
+  updateFlights()
+})
 
 const getTime = (ISOTime) => {
   const LocaleString = new Date(ISOTime).toLocaleString()
@@ -165,17 +223,30 @@ const getStatus = (status, time_departure) => {
   if (status === 'cancel') {
     return {status: '已取消', color: 'red'}
   } else if (status === 'delay') {
-    return {status: '延误', color: 'yellow'}
+    return {status: '延误', color: 'yellow-8'}
   }
   return {status: '准点', color: 'green'}
 }
 
+
+const price = ref([])
 const bookFlightsCard = ref(false)
 const flight_id = ref('')
 const bookFlights = async (id) => {
   flight_id.value = id
-  bookFlightsCard.value = true
+
   const flight = flights.value.find((flight) => flight.id === id)
+
+  const status = getStatus(flight.status, flight.time_departure)
+  if (status.status === '已取消' || status.status === '已起飞') {
+    notify_error('航班状态不允许购买')
+    return
+  }
+  bookFlightsCard.value = true
+
+  price.value[0] = flight.price0 / 100
+  price.value[1] = flight.price1 / 100
+  price.value[2] = flight.price2 / 100
   const model = flight.aircraft.type.model
   const books = await updateBooks()
   initList(model.seat, books)
@@ -184,10 +255,14 @@ const bookFlights = async (id) => {
 const row = 100
 let List = []
 const itemsCount = ref(0)
-
+const seatTypes = ref([])
 const initList = (seat, books) => {
-  // console.log(seat)
   List = []
+  seatTypes.value = []
+  seatTypes.value[0] = 0
+  seatTypes.value[1] = 0
+  seatTypes.value[2] = 0
+
   itemsCount.value = 0
   for (let i = 1; i <= row; i++) {
     let listRow = []
@@ -199,13 +274,18 @@ const initList = (seat, books) => {
       }
 
       if (seat.hasOwnProperty(label)) {
-        // console.log('has')
         let colour = 'bg-green'
         if (seat[label].type === 1) {
           colour = 'bg-blue'
         }
+        if (seat[label].type === 2) {
+          colour = 'bg-yellow-8'
+        }
+        seatTypes.value[seat[label].type] += 1
+
         if (books.find((book) => book.seat === label)) {
           colour = 'bg-red'
+          seatTypes.value[seat[label].type] -= 1
         }
 
         listRow.push({
@@ -232,6 +312,25 @@ const updateBooks = async () => {
     console.log(err)
   })
   return books
+}
+
+const money = ref(0)
+const points = ref(0)
+const updeteUserInfo = () => {
+  const url = '/users/id/' + $userStore.id
+  api.get(url).then((res) => {
+    money.value = res.data.money
+    points.value = res.data.points
+  })
+}
+const getVip = () => {
+  if (points.value / 100 >= 10000) {
+    return 2
+  }
+  if (points.value / 100 >= 1000) {
+    return 1
+  }
+  return 0
 }
 
 const buyFlights = () => {
@@ -270,15 +369,30 @@ const buyFlights = () => {
   })
 }
 
+const airports = ref([])
+
+const updateAirports = () => {
+  const url = '/airports'
+  api.get(url).then((res) => {
+    airports.value = res.data
+    for (let airport of airports.value) {
+      airport.label = airport.name + ' (' + airport.code + ')'
+      airport.value = airport.code
+    }
+  })
+}
+
 const updateAll = () => {
+  updeteUserInfo()
   updateFlights()
+  updateAirports()
 }
 onMounted(() => {
   updateAll()
 })
 setInterval(() => {
   updateAll()
-}, 1000 * 10);
+}, 1000 * 60);
 
 </script>
 

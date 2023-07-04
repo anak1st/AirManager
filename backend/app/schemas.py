@@ -249,8 +249,8 @@ class Book(BookBase):
     id: int
 
     # ORM
-    user: UserBase
-    flight: FlightWithoutBooks
+    user: UserBase | None
+    flight: FlightWithoutBooks | None
 
     class Config:
         orm_mode = True

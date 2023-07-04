@@ -3,25 +3,15 @@ const AirportLinks = [
   {
     'to': '/airport',
     'icon': 'home',
-    'text': '首页'
-  },
-  {
-    'to': '/airport/flights',
-    'icon': 'list',
     'text': '航班'
-  },
-  {
-    'to': '/airport/books',
-    'icon': 'list',
-    'text': '订单'
-  },
+  }
 ]
 
 const AirlineLinks = [
   {
     'to': '/airline',
     'icon': 'home',
-    'text': '首页'
+    'text': '航班'
   },
   {
     'to': '/airline/aircrafts',
@@ -32,11 +22,6 @@ const AirlineLinks = [
     'to': '/airline/flight_types',
     'icon': 'list',
     'text': '航班类型'
-  },
-  {
-    'to': '/airline/flights',
-    'icon': 'list',
-    'text': '航班'
   }
 ]
 
@@ -58,7 +43,7 @@ const ManageLinks = [
   },
   {
     'to': '/manage/users',
-    'icon': 'list',
+    'icon': 'account_circle',
     'text': '用户'
   }
 ]
@@ -67,17 +52,12 @@ const UserLinks = [
   {
     'to': '/user',
     icon: 'home',
-    text: '首页'
+    text: '订单'
   },
   {
     'to': '/user/flights',
     icon: 'list',
     text: '航班'
-  },
-  {
-    'to': '/user/book',
-    icon: 'list',
-    text: '订单'
   },
   {
     'to': '/user/wallet',
@@ -86,7 +66,7 @@ const UserLinks = [
   },
   {
     'to': '/user/info',
-    icon: 'list',
+    icon: 'account_circle',
     text: '个人信息'
   },
   {

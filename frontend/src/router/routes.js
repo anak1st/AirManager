@@ -4,8 +4,7 @@ const routes = [
     path: "/",
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '',       component: () => import('pages/MainPage.vue') },
-      { path: '/login', component: () => import('pages/LoginPage.vue') },
+      { path: '',       component: () => import('pages/LoginPage.vue') },
       { path: '/register', component: () => import('pages/RegisterPage.vue') }
     ]
   },
@@ -13,9 +12,8 @@ const routes = [
     path: '/user',
     component: () => import('layouts/UserLayout.vue'),
     children: [
-      { path: '',         component: () => import('pages/user/MainPage.vue') },
+      { path: '',         component: () => import('pages/user/BookPage.vue') },
       { path: 'help',     component: () => import('pages/user/HelpPage.vue') },
-      { path: 'book',     component: () => import('pages/user/BookPage.vue') },
       { path: 'flights',  component: () => import('pages/user/FlightsPage.vue') },
       { path: 'wallet',   component: () => import('pages/user/WalletPage.vue') },
       { path: 'info',     component: () => import('pages/user/InfoPage.vue') },
@@ -26,19 +24,16 @@ const routes = [
     path: "/airline",
     component: () => import('layouts/AirlineLayout.vue'),
     children: [
-      { path: '',             component: () => import('pages/airline/MainPage.vue') },
+      { path: '',             component: () => import('pages/airline/FlightsPage.vue') },
       { path: 'aircrafts',    component: () => import('pages/airline/AircraftsPage.vue') },
       { path: 'flight_types', component: () => import('pages/airline/FlightTypesPage.vue') },
-      { path: 'flights',      component: () => import('pages/airline/FlightsPage.vue') },
     ]
   },
   {
     path: "/airport",
     component: () => import('layouts/AirportLayout.vue'),
     children: [
-      { path: '',         component: () => import('pages/airport/MainPage.vue') },
-      { path: 'flights',  component: () => import('pages/airport/FlightsPage.vue') },
-      { path: 'books',    component: () => import('pages/airport/BooksPage.vue') },
+      { path: '',         component: () => import('pages/airport/FlightsPage.vue') },
     ]
   },
   {

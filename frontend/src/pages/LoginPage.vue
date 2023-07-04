@@ -74,10 +74,26 @@ const email = ref('')
 const password = ref('')
 const isPwd = ref(true)
 
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
+
 
 const login = () => {
   if (email.value === '' || password.value === '') {
-    $q.notify('请输入邮箱和密码')
+    notify_error('请输入邮箱和密码')
     return
   }
   if (inputType.value === 'adminSignin') {
@@ -93,14 +109,14 @@ const login = () => {
       } else if (String(res.data.admin_type).startsWith("Airline")) {
         $router.push('/company')
       } else {
-        $q.notify('账号权限错误')
+        notify_error('账号权限错误')
         return
       }
       $userStore.login(res.data.id, res.data.email, res.data.username, res.data.admin_type)
-      $q.notify('登录成功')
+      notify_sucess('登录成功')
     }).catch((err) => {
       console.log(err)
-      $q.notify('登录失败，账号不存在或密码错误')
+      notify_error('登录失败，账号不存在或密码错误')
     })
   } else {
     api.post('/users/login', {
@@ -110,10 +126,10 @@ const login = () => {
       console.log(res)
       $userStore.login(res.data.id, res.data.email, res.data.username, "User")
       $router.push('/user')
-      $q.notify('登录成功')
+      notify_sucess('登录成功')
     }).catch((err) => {
       console.log(err)
-      $q.notify('登录失败，账号不存在或密码错误')
+      notify_error('登录失败，账号不存在或密码错误')
     })
   }
 }

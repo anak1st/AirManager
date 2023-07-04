@@ -1,6 +1,7 @@
 <template>
   <q-page>
-    <div class="q-my-md text-h4 text-center"> 钱包余额 {{ money }} 元 </div>
+    <div class="q-my-md text-h4 text-center"> 钱包余额 {{ money / 100 }} 元 </div>
+    <div class="q-my-md text-h4 text-center"> 积分 {{ points / 100 }} 点 </div>
     <div class="q-my-md text-h6 text-center"> 选择下面的套餐进行充值 </div>
     <div class="q-pa-md row items-start q-gutter-md">
       <q-card flat bordered class="my-card" v-for="gitcard of giftCards" :key="gitcard">
@@ -41,7 +42,22 @@ import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
 
+const points = ref(0)
 const money = ref(0)
 
 const giftCards = [
@@ -81,6 +97,7 @@ const updateMoney = () => {
   const url = '/users/id/' + $userStore.id
   api.get(url).then((res) => {
     money.value = res.data.money
+    points.value = res.data.points
   })
 }
 
@@ -94,22 +111,12 @@ const chargeConfirm = (plan) => {
   }).onOk(() => {
     const url = '/users/id/' + $userStore.id + '/plan/' + plan
     api.get(url).then((res) => {
-        $q.notify({
-          message: '充值成功',
-          color: 'positive',
-          icon: 'check',
-          position: 'top'
-        })
-        updateMoney()
-      }).catch((err) => {
-        console.log(err)
-        $q.notify({
-          message: '充值失败',
-          color: 'negative',
-          icon: 'warning',
-          position: 'top'
-        })
-      })
+      notify_sucess('充值成功')
+      updateMoney()
+    }).catch((err) => {
+      console.log(err)
+      notify_error('充值失败')
+    })
   })
 }
 

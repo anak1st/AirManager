@@ -11,7 +11,7 @@
         </q-btn>
         <q-space />
         <q-btn icon="send"  class="q-ma-sm" label="注册" color="blue"  @click="$router.push('/register')"/>
-        <q-btn icon="login" class="q-ma-sm" label="登录" color="green" @click="$router.push('/login')"/>
+        <q-btn icon="login" class="q-ma-sm" label="登录" color="green" @click="$router.push('/')"/>
       </q-toolbar>
     </q-header>
     <q-page-container>

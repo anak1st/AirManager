@@ -5,6 +5,7 @@
       class="bg-grey-1 text-black"
       align="justify"
       narrow-indicator
+
     >
       <q-tab name="airports" label="机场" />
       <q-tab name="airportAdmins" label="机场管理员账号" />
@@ -25,6 +26,13 @@
           selection="single"
           v-model:selected="airportSelected"
           separator="cell"
+          rows-per-page-label="每页行数"
+          :selected-rows-label="(numberOfRows) => {
+            return '选中了第' + String(numberOfRows) + '行'
+          }"
+          :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => {
+            return `${firstRowIndex} - ${endRowIndex} / ${totalRowsNumber}`
+          }"
         />
         <q-btn-group class="q-ma-md">
           <q-btn color="accent" icon="card_giftcard" label="添加" />
@@ -86,7 +94,21 @@ import { onMounted, ref } from 'vue'
 import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
 
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
 
 const airports = ref([])
 const airportTab = ref('airports')
@@ -148,11 +170,7 @@ const addAdminEmail = ref('')
 const addAdminPassword = ref('')
 const addAdmin = () => {
   if (addAdminName.value === '' || addAdminEmail.value === '' || addAdminPassword.value === '') {
-    $q.notify({
-      color: 'negative',
-      message: '请填写完整信息',
-      icon: 'report_problem',
-    })
+    notify_error('请填写完整信息')
     return
   }
 
@@ -165,21 +183,13 @@ const addAdmin = () => {
     email: addAdminEmail.value,
     password: addAdminPassword.value,
   }).then((res) => {
-    $q.notify({
-      color: 'positive',
-      message: '添加成功',
-      icon: 'check',
-    })
+    notify_sucess('添加成功')
     updateAirportAdmins()
     addAdminName.value = ''
     addAdminEmail.value = ''
     addAdminPassword.value = ''
   }).catch((err) => {
-    $q.notify({
-      color: 'negative',
-      message: '添加失败',
-      icon: 'report_problem',
-    })
+    notify_error('添加失败')
     console.log(err)
   })
 }
@@ -187,11 +197,7 @@ const addAdmin = () => {
 
 const deleteAdmin = () => {
   if (airportAdminSelected.value.length === 0) {
-    $q.notify({
-      color: 'negative',
-      message: '请选择一个管理员',
-      icon: 'report_problem',
-    })
+    notify_error('请选择一个管理员')
     return
   }
   const id = airportAdminSelected.value[0].id
@@ -203,19 +209,11 @@ const deleteAdmin = () => {
     persistent: true
   }).onOk(() => {
     api.delete('/admins/id/' + id + '/').then((res) => {
-      $q.notify({
-        color: 'positive',
-        message: '删除成功',
-        icon: 'check',
-      })
+      notify_sucess('删除成功')
       updateAirportAdmins()
       airportAdminSelected.value = []
     }).catch((err) => {
-      $q.notify({
-        color: 'negative',
-        message: '删除失败',
-        icon: 'report_problem',
-      })
+      notify_error('删除失败')
       console.log(err)
     })
   })

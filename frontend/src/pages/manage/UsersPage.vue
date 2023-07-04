@@ -1,21 +1,28 @@
 <template>
   <div class="row no-wrap shadow-1">
-    <q-toolbar class="col-9" :class="$q.dark.isActive ? 'bg-grey-9 text-white' : 'bg-grey-3'">
+    <q-toolbar class="" :class="$q.dark.isActive ? 'bg-grey-9 text-white' : 'bg-grey-3'">
       <q-btn flat round dense icon="search" />
-      <q-toolbar-title>Search</q-toolbar-title>
-
+      <q-toolbar-title>
+        <q-input
+          filled
+          dense
+          v-model="searchThing"
+        />
+      </q-toolbar-title>
+      <q-select
+        filled
+        dense
+        v-model="searchWhat"
+        :options="['用户名', '邮箱', '实名']"
+        style="width: 100px;"
+      />
     </q-toolbar>
     <q-space />
-    <q-toolbar class="col-3 bg-primary text-white">
-      <q-space />
-      <q-btn flat round dense icon="bluetooth" class="q-mr-sm" />
-      <q-btn flat round dense icon="more_vert" />
-    </q-toolbar>
   </div>
-  <q-page class="bg-grey-1 column">
+  <q-page class="bg-grey-1 q-pa-md column">
     <div>
       <q-table
-        flat
+        flat bordered
         :rows="users"
         :columns="userColumns"
         row-key="name"
@@ -30,41 +37,40 @@
         }"
       />
       <q-btn-group class="q-my-md">
-        <q-btn color="accent" icon="card_giftcard" label="添加" />
-        <q-btn color="accent" icon="create" label="删除">
-          : {{ "无" }}
+        <!-- <q-btn color="accent" icon="card_giftcard" label="添加" /> -->
+        <q-btn color="accent" icon="create" label="删除" @click="deleteUser = true">
+          : {{ getSelectedUser() }}
         </q-btn>
       </q-btn-group>
     </div>
-    <q-dialog v-model="modifyUserCard" >
-      <q-card class="my-card" style="width: 400px;">
-        <q-img src="~assets/A380.jpg" style="height: 150px;" />
-
-        <q-card-section>
-          <div class="q-my-md text-h4 text-center"> 添加机场管理员 </div>
-
-          <q-input filled class="q-ma-md" v-model="modifyUserCard" label="密码"   />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup color="primary" label="取消" />
-          <q-btn v-close-popup color="primary" label="添加" @click="addAdmin" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
 
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
+
+const searchWhat = ref('')
+const searchThing = ref('')
 const users = ref([])
 const userSelected = ref([])
 const userColumns = [
@@ -107,20 +113,77 @@ const userColumns = [
 ]
 
 const updateUsers = () => {
-  api.get('/users/').then((res) => {
-    users.value = res.data
-    console.log(res.data)
-  })
+  if (searchWhat.value === '' || searchThing.value == '') {
+    api.get('/users/').then((res) => {
+      users.value = res.data
+    })
+    return
+  }
+  if (searchWhat.value === '用户名') {
+    api.get('/users/search/', {
+      params: {
+        username: searchThing.value
+      }
+    }).then((res) => {
+      users.value = res.data
+    })
+    return
+  }
+  if (searchWhat.value === '邮箱') {
+    api.get('/users/search/', {
+      params: {
+        email: searchThing.value
+      }
+    }).then((res) => {
+      users.value = res.data
+    })
+    return
+  }
+  if (searchWhat.value === '实名') {
+    api.get('/users/search/', {
+      params: {
+        fullname: searchThing.value
+      }
+    }).then((res) => {
+      users.value = res.data
+    })
+    return
+  }
 }
+
+watch([searchWhat, searchThing], () => {
+  updateUsers()
+})
 
 const getSelectedUser = () => {
   if (userSelected.value.length === 0) {
-    return null
+    return 'null'
   }
-  return userSelected.value[0]
+  return userSelected.value[0].email
 }
 
-const modifyUserCard = ref(false)
+const deleteUser = () => {
+  if (getSelectedUser() === 'null') {
+    notify_error('请选择一个用户')
+    return
+  }
+
+  $q.dialog({
+    title: '删除用户',
+    message: '确定删除用户 ' + getSelectedUser() + ' 吗？',
+
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    api.delete('/users/' + getSelectedUser()).then((res) => {
+      notify_sucess('删除成功')
+      updateUsers()
+    }).catch((err) => {
+      notify_error('删除失败')
+      console.log(err)
+    })
+  })
+}
 
 const updateAll = () => {
   updateUsers()
@@ -131,7 +194,7 @@ onMounted(() => {
 // every 10s update
 setInterval(() => {
   updateAll()
-}, 1000 * 10)
+}, 1000 * 60)
 
 </script>
 

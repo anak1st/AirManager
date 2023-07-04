@@ -115,6 +115,22 @@ const $router = useRouter()
 
 import { api } from 'src/boot/axios';
 
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
+
 const step = ref(1)
 
 const email = ref('')
@@ -129,7 +145,7 @@ const address = ref('')
 const gotoStep2 = () => {
   if (email.value === ''
    || password.value === '') {
-    $q.notify('请输入邮箱和密码')
+    notify_error('请输入邮箱和密码')
     return
   }
   step.value = 2
@@ -137,19 +153,19 @@ const gotoStep2 = () => {
 
 const gotoStep3 = () => {
   if (username.value === '') {
-    $q.notify('请输入用户名')
+    notify_error('请输入用户名')
     return
   }
   if (fullname.value === '') {
-    $q.notify('请输入全名')
+    notify_error('请输入全名')
     return
   }
   if (phone.value === '') {
-    $q.notify('请输入手机号')
+    notify_error('请输入手机号')
     return
   }
   if (address.value === '') {
-    $q.notify('请输入居住地址')
+    notify_error('请输入居住地址')
     return
   }
   step.value = 3
@@ -164,12 +180,11 @@ const register = () => {
     phone: phone.value,
     address: address.value,
   }).then((res) => {
-    console.log(res)
-    $q.notify('注册成功')
-    $router.push('/login')
+    notify_sucess('注册成功')
+    $router.push('/')
   }).catch((err) => {
     console.log(err)
-    $q.notify('注册失败')
+    notify_error('注册失败')
   })
 }
 </script>

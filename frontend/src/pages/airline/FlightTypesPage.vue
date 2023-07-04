@@ -91,6 +91,22 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
+const notify_sucess = (message) => {
+  $q.notify({
+    message: message,
+    color: "green",
+    icon: "check",
+  });
+}
+
+const notify_error = (message) => {
+  $q.notify({
+    message: message,
+    color: "red",
+    icon: "close",
+  });
+}
+
 const flight_types = ref([])
 let airports = []
 const selected1 = ref([])
@@ -144,36 +160,21 @@ const cardAdd = ref(false)
 
 const addFlightType = () => {
   if (dis.value < 100) {
-      $q.notify({
-        color: 'red-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '距离过近!',
-      })
-      return
-    }
-    const airline_code = $userStore.admin_type.slice(8)
-    api.post('/flight_types', {
-      airline_code: airline_code,
-      airport_code_departure: selected1.value.code,
-      airport_code_arrival: selected2.value.code,
-    }).then((res) => {
-      $q.notify({
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '添加成功!',
-      })
-      updateFlightTypes()
-    }).catch((err) => {
-      console.log(err)
-      $q.notify({
-        color: 'red-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '添加失败!',
-      })
-    })
+    notify_error("距离过近!")
+    return
+  }
+  const airline_code = $userStore.admin_type.slice(8)
+  api.post('/flight_types', {
+    airline_code: airline_code,
+    airport_code_departure: selected1.value.code,
+    airport_code_arrival: selected2.value.code,
+  }).then((res) => {
+    notify_sucess("添加成功!")
+    updateFlightTypes()
+  }).catch((err) => {
+    console.log(err)
+    notify_error("添加失败!")
+  })
 }
 
 const confirm = (id) => {
@@ -185,21 +186,11 @@ const confirm = (id) => {
     persistent: true
   }).onOk(() => {
     api.delete('/flight_types/id/' + id).then((res) => {
-      $q.notify({
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '删除成功!',
-      })
+      notify_sucess("删除成功!")
       updateFlightTypes()
     }).catch((err) => {
+      notify_error("删除失败!")
       console.log(err)
-      $q.notify({
-        color: 'red-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: '删除失败!',
-      })
     })
   })
 }
