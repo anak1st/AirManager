@@ -115,7 +115,7 @@ const $router = useRouter()
 
 import { api } from 'src/boot/axios';
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -180,7 +180,7 @@ const register = () => {
     phone: phone.value,
     address: address.value,
   }).then((res) => {
-    notify_sucess('注册成功')
+    notify_success('注册成功')
     $router.push('/')
   }).catch((err) => {
     console.log(err)

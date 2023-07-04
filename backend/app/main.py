@@ -57,12 +57,12 @@ def create_aircraft_type(aircraft_type: schemas.AircraftTypeCreate, db: Session 
     return crud.create_aircraft_type(db=db, aircraft_type=aircraft_type)
 
 
-@app.delete("/aircraft_types/code/{aircraft_code}", response_model=schemas.AircraftType)
-def delete_aircraft_type(aircraft_code: str, db: Session = Depends(get_db)):
-    db_aircraft_type = crud.get_aircraft_type(db, aircraft_code=aircraft_code)
-    if db_aircraft_type is None:
-        raise HTTPException(status_code=404, detail="AircraftType not found")
-    return crud.delete_aircraft_type(db=db, aircraft_code=aircraft_code)
+# @app.delete("/aircraft_types/code/{aircraft_code}", response_model=schemas.AircraftType)
+# def delete_aircraft_type(aircraft_code: str, db: Session = Depends(get_db)):
+#     db_aircraft_type = crud.get_aircraft_type(db, aircraft_code=aircraft_code)
+#     if db_aircraft_type is None:
+#         raise HTTPException(status_code=404, detail="AircraftType not found")
+#     return crud.delete_aircraft_type(db=db, aircraft_code=aircraft_code)
 
 
 @app.put("/aircraft_types/{aircraft_code}", response_model=schemas.AircraftType)
@@ -191,12 +191,12 @@ def create_flight_type(flight_type: schemas.FlightTypeCreate, db: Session = Depe
     return crud.create_flight_type(db=db, flight_type=flight_type)
 
 
-@app.delete("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
-def delete_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
-    db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
-    if db_flight_type is None:
-        raise HTTPException(status_code=404, detail="Flight Type not found")
-    return crud.delete_flight_type(db=db, flight_type_id=flight_type_id)
+# @app.delete("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
+# def delete_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
+#     db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
+#     if db_flight_type is None:
+#         raise HTTPException(status_code=404, detail="Flight Type not found")
+#     return crud.delete_flight_type(db=db, flight_type_id=flight_type_id)
 
 
 # ==================== Flights ====================

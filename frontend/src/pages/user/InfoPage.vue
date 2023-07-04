@@ -82,7 +82,7 @@ import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -130,7 +130,7 @@ const modifyUserInfo = () => {
       address: address.value,
     }).then((res) => {
       updateUserInfo()
-      notify_sucess('更新成功')
+      notify_success('更新成功')
     }).catch((err) => {
       console.log(err)
       notify_error('更新失败')
@@ -167,7 +167,7 @@ const modifyPasswd = () => {
       email: email,
       password: password1.value,
     }).then((res) => {
-      notify_sucess('更新成功')
+      notify_success('更新成功')
     }).catch((err) => {
       console.log(err)
       notify_error('更新失败')

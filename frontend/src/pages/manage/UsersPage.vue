@@ -53,7 +53,7 @@ import { useQuasar } from 'quasar';
 const $q = useQuasar()
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -177,7 +177,7 @@ const deleteUser = () => {
   }).onOk(() => {
     const id = userSelected.value[0].id
     api.delete('/users/id/' + id).then((res) => {
-      notify_sucess('删除成功')
+      notify_success('删除成功')
       updateUsers()
     }).catch((err) => {
       notify_error('删除失败')

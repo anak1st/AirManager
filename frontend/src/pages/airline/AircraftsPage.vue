@@ -76,7 +76,7 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -136,7 +136,7 @@ const addAircraft = () => {
     airline_code: airline_code,
     type_code: aircraft_type.value.code,
   }).then((res) => {
-    notify_sucess('添加成功!')
+    notify_success('添加成功!')
     updateAircrafts()
   }).catch((err) => {
     notify_error('添加失败!')
@@ -152,7 +152,7 @@ const confirm = (id) => {
     persistent: true
   }).onOk(() => {
     api.delete('/aircrafts/id/' + id).then((res) => {
-      notify_sucess('删除成功!')
+      notify_success('删除成功!')
       updateAircrafts()
     }).catch((err) => {
       console.log(err)

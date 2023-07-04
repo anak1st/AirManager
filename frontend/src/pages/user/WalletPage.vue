@@ -42,7 +42,7 @@ import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -61,11 +61,11 @@ const points = ref(0)
 const money = ref(0)
 
 const giftCards = [
-  {
-    label: 0,
-    prise: -99999999,
-    moneyadd: 0,
-  },
+  // {
+  //   label: 0,
+  //   prise: -99999999,
+  //   moneyadd: 0,
+  // },
   {
     label: 1,
     prise: 32,
@@ -111,7 +111,7 @@ const chargeConfirm = (plan) => {
   }).onOk(() => {
     const url = '/users/id/' + $userStore.id + '/plan/' + plan
     api.get(url).then((res) => {
-      notify_sucess('充值成功')
+      notify_success('充值成功')
       updateMoney()
     }).catch((err) => {
       console.log(err)

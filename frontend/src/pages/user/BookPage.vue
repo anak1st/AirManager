@@ -180,7 +180,7 @@ import { api } from 'src/boot/axios';
 
 const show_history = ref(true)
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -266,7 +266,7 @@ const confirm = (id) => {
     const url = '/books/id/' + id
     api.delete(url).then((res) => {
       updateAll()
-      notify_sucess('删除成功')
+      notify_success('删除成功')
     }).catch((err) => {
       notify_error('删除失败')
       console.log(err)

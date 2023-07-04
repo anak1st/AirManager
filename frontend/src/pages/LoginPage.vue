@@ -74,7 +74,7 @@ const email = ref('')
 const password = ref('')
 const isPwd = ref(true)
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -113,7 +113,7 @@ const login = () => {
         return
       }
       $userStore.login(res.data.id, res.data.email, res.data.username, res.data.admin_type)
-      notify_sucess('登录成功')
+      notify_success('登录成功')
     }).catch((err) => {
       console.log(err)
       notify_error('登录失败，账号不存在或密码错误')
@@ -126,7 +126,7 @@ const login = () => {
       console.log(res)
       $userStore.login(res.data.id, res.data.email, res.data.username, "User")
       $router.push('/user')
-      notify_sucess('登录成功')
+      notify_success('登录成功')
     }).catch((err) => {
       console.log(err)
       notify_error('登录失败，账号不存在或密码错误')

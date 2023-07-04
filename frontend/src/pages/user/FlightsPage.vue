@@ -3,10 +3,28 @@
     <q-list bordered>
       <q-item class="q-my-sm row">
         <q-item-section>
-          <q-select filled v-model="airport_departure" :options="airports" label="出发" />
+          <q-select filled v-model="airport_departure" :options="airports" label="出发">
+            <template v-slot:append>
+              <q-icon
+                v-if="airport_departure !== []"
+                class="cursor-pointer"
+                name="clear"
+                @click.stop.prevent="airport_departure = []"
+              />
+            </template>
+          </q-select>
         </q-item-section>
         <q-item-section>
-          <q-select filled v-model="airport_arrival" :options="airports" label="到达" />
+          <q-select filled v-model="airport_arrival" :options="airports" label="到达">
+            <template v-slot:append>
+              <q-icon
+                v-if="airport_arrival !== []"
+                class="cursor-pointer"
+                name="clear"
+                @click.stop.prevent="airport_arrival = []"
+              />
+            </template>
+          </q-select>
         </q-item-section>
         <q-item-section style="max-width: 150px;">
           <q-btn label="展示所有航班" @click="showall = !showall" />
@@ -144,7 +162,7 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -360,7 +378,7 @@ const buyFlights = () => {
   }
 
   api.post(url, data).then((res) => {
-    notify_sucess('购买成功')
+    notify_success('购买成功')
     updateAll()
     bookFlightsCard.value = false
   }).catch((err) => {

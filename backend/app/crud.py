@@ -193,6 +193,11 @@ def delete_flight(db: Session, flight_id: int):
         book = schemas.Book.from_orm(r)
         delete_book(db, book.id)
 
+    res = get_books_history_by_flight(db, flight_id)
+    for r in res:
+        book_history = schemas.Book.from_orm(r)
+        delete_book_history(db, book_history.id)
+
     db_flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
     db.delete(db_flight)
     db.commit()
@@ -268,6 +273,10 @@ def get_books_history_by_user(db: Session, user_id: int):
     return db.query(models.BookHistory).filter(models.BookHistory.user_id == user_id).all()
 
 
+def get_books_history_by_flight(db: Session, flight_id: int):
+    return db.query(models.BookHistory).filter(models.BookHistory.flight_id == flight_id).all()
+
+
 def get_books_num_by_flight(db: Session, flight_id: int):
     return db.query(models.Book).filter(models.Book.flight_id == flight_id).count()
 
@@ -292,7 +301,6 @@ def get_books_pay_by_airline_code(db: Session, airline_code: str):
     if total is None:
         total = 0
     return total
-
 
 # ==================== Users ====================
 

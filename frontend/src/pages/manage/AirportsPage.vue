@@ -94,7 +94,7 @@ import { onMounted, ref } from 'vue'
 import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 const $q = useQuasar()
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -182,7 +182,7 @@ const addAdmin = () => {
     email: addAdminEmail.value,
     password: addAdminPassword.value,
   }).then((res) => {
-    notify_sucess('添加成功')
+    notify_success('添加成功')
     updateAirportAdmins()
     addAdminName.value = ''
     addAdminEmail.value = ''
@@ -208,7 +208,7 @@ const deleteAdmin = () => {
     persistent: true
   }).onOk(() => {
     api.delete('/admins/id/' + id + '/').then((res) => {
-      notify_sucess('删除成功')
+      notify_success('删除成功')
       updateAirportAdmins()
       airportAdminSelected.value = []
     }).catch((err) => {

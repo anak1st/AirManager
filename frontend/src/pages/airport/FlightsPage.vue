@@ -125,7 +125,7 @@ import { onMounted, ref } from 'vue'
 import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -224,7 +224,7 @@ const confirm = () => {
   api.put(url, data).then((res) => {
     updateFlights()
     card.value = false
-    notify_sucess('修改成功!')
+    notify_success('修改成功!')
   }).catch((err) => {
     console.log(err)
     notify_error('修改失败!')
@@ -248,7 +248,9 @@ const updateFlights = () => {
       flight.aircraft.type.model = JSON.parse(flight.aircraft.type.model)
     }
     flights.value.push(...data)
-
+    flights.value.sort((a, b) => {
+      return new Date(a.time_departure) - new Date(b.time_departure)
+    })
   })
   api.get(url, {
     params: {
@@ -260,6 +262,9 @@ const updateFlights = () => {
       flight.aircraft.type.model = JSON.parse(flight.aircraft.type.model)
     }
     flights.value.push(...data)
+    flights.value.sort((a, b) => {
+      return new Date(a.time_departure) - new Date(b.time_departure)
+    })
   })
 }
 

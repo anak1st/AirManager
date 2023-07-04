@@ -91,7 +91,7 @@ import { api } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 const $userStore = useUserStore()
 
-const notify_sucess = (message) => {
+const notify_success = (message) => {
   $q.notify({
     message: message,
     color: "green",
@@ -169,7 +169,7 @@ const addFlightType = () => {
     airport_code_departure: selected1.value.code,
     airport_code_arrival: selected2.value.code,
   }).then((res) => {
-    notify_sucess("添加成功!")
+    notify_success("添加成功!")
     updateFlightTypes()
   }).catch((err) => {
     console.log(err)
@@ -186,7 +186,7 @@ const confirm = (id) => {
     persistent: true
   }).onOk(() => {
     api.delete('/flight_types/id/' + id).then((res) => {
-      notify_sucess("删除成功!")
+      notify_success("删除成功!")
       updateFlightTypes()
     }).catch((err) => {
       notify_error("删除失败!")
