@@ -3,7 +3,9 @@
     <q-list bordered>
       <q-item class="q-my-sm row">
         <q-item-section>
-          <q-item-label class="text-h6">销售总额: 共售机票 {{ sale_num }} 张, 总销售额 {{ sale }} 元.</q-item-label>
+          <q-item-label class="text-h6">
+            销售总额: 共售机票 {{ sale_num }} 张, 总销售额 {{ sale }} 元.
+          </q-item-label>
         </q-item-section>
       </q-item>
       <q-item
@@ -20,11 +22,17 @@
           </q-avatar>
         </q-item-section>
 
-        <q-item-section>
+        <q-item-section class="col-1">
           <q-item-label>
-            {{ flight.aircraft.airline.code + " " + flight.id + " " + flight.aircraft.type.name }}
+            {{ flight.aircraft.airline.code + " " + flight.id }}
           </q-item-label>
           <q-item-label caption>{{ flight.aircraft.airline.name }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section class="col-1">
+          <q-item-label>
+            {{ flight.aircraft.airline.code + " " + flight.aircraft.id + " " + flight.aircraft.type.name }}
+          </q-item-label>
         </q-item-section>
 
         <q-item-section class="items-end">
@@ -227,6 +235,9 @@ const updateFlights = () => {
   const url = '/flights/airline_code/' + $userStore.admin_type.slice(8)
   api.get(url).then((res) => {
     flights.value = res.data
+    flights.value.sort((a, b) => {
+      return a.time_departure > b.time_departure ? 1 : -1
+    })
     updateFlightsSale()
   })
 }
@@ -252,7 +263,7 @@ const updateSale = () => {
     console.log(err)
   })
   api.get('/books/pay/airline_code/' + airline_code).then((res) => {
-    sale.value = res.data
+    sale.value = res.data / 100
   }).catch((err) => {
     console.log(err)
   })

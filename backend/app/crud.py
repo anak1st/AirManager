@@ -61,11 +61,17 @@ def create_aircraft(db: Session, aircraft: schemas.AircraftCreate):
     return db_aircraft
 
 
-# def delete_aircraft(db: Session, aircraft_id: int):
-#     db_aircraft = db.query(models.Aircraft).filter(models.Aircraft.id == aircraft_id).first()
-#     db.delete(db_aircraft)
-#     db.commit()
-#     return db_aircraft
+def delete_aircraft(db: Session, aircraft_id: int):
+    flight_ids = get_flights_by_aircraft_id(db, aircraft_id)
+    for flight_id in flight_ids:
+        flight = schemas.Flight.from_orm(flight_id)
+        delete_flight(db, flight.id)
+
+
+    db_aircraft = db.query(models.Aircraft).filter(models.Aircraft.id == aircraft_id).first()
+    db.delete(db_aircraft)
+    db.commit()
+    return db_aircraft
 
 
 # ==================== Airports ====================
@@ -135,6 +141,11 @@ def create_flight_type(db: Session, flight_type: schemas.FlightTypeCreate):
 
 
 def delete_flight_type(db: Session, flight_type_id: int):
+    flight_ids = get_flights_by_flight_type_id(db, flight_type_id)
+    for flight_id in flight_ids:
+        flight = schemas.Flight.from_orm(flight_id)
+        delete_flight(db, flight.id)
+
     db_flight_type = db.query(models.FlightType).filter(models.FlightType.id == flight_type_id).first()
     db.delete(db_flight_type)
     db.commit()
@@ -166,6 +177,14 @@ def get_flights(db: Session, skip: int = 0, limit: int = 100):
 
 def get_flight(db: Session, flight_id: int):
     return db.query(models.Flight).filter(models.Flight.id == flight_id).first()
+
+
+def get_flights_by_aircraft_id(db: Session, aircraft_id):
+    return db.query(models.Flight).filter(models.Flight.aircraft_id == aircraft_id).all()
+
+
+def get_flights_by_flight_type_id(db: Session, flight_type_id):
+    return db.query(models.Flight).filter(models.Flight.flight_type_id == flight_type_id).all()
 
 
 def get_flights_by_airports(db: Session, airport_code_departure: str, airport_code_arrival: str):

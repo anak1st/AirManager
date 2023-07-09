@@ -154,12 +154,12 @@ def create_aircraft(aircraft: schemas.AircraftCreate, db: Session = Depends(get_
     return crud.create_aircraft(db=db, aircraft=aircraft)
 
 
-# @app.delete("/aircrafts/id/{aircraft_id}", response_model=schemas.Aircraft)
-# def delete_aircraft(aircraft_id: int, db: Session = Depends(get_db)):
-#     db_aircraft = crud.get_aircraft(db, aircraft_id=aircraft_id)
-#     if db_aircraft is None:
-#         raise HTTPException(status_code=404, detail="Aircraft not found")
-#     return crud.delete_aircraft(db=db, aircraft_id=aircraft_id)
+@app.delete("/aircrafts/id/{aircraft_id}", response_model=schemas.Aircraft)
+def delete_aircraft(aircraft_id: int, db: Session = Depends(get_db)):
+    db_aircraft = crud.get_aircraft(db, aircraft_id=aircraft_id)
+    if db_aircraft is None:
+        raise HTTPException(status_code=404, detail="Aircraft not found")
+    return crud.delete_aircraft(db=db, aircraft_id=aircraft_id)
 
 # ==================== FlightTypes ====================
 
@@ -191,12 +191,12 @@ def create_flight_type(flight_type: schemas.FlightTypeCreate, db: Session = Depe
     return crud.create_flight_type(db=db, flight_type=flight_type)
 
 
-# @app.delete("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
-# def delete_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
-#     db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
-#     if db_flight_type is None:
-#         raise HTTPException(status_code=404, detail="Flight Type not found")
-#     return crud.delete_flight_type(db=db, flight_type_id=flight_type_id)
+@app.delete("/flight_types/id/{flight_type_id}", response_model=schemas.FlightType)
+def delete_flight_type(flight_type_id: int, db: Session = Depends(get_db)):
+    db_flight_type = crud.get_flight_type(db, flight_type_id=flight_type_id)
+    if db_flight_type is None:
+        raise HTTPException(status_code=404, detail="Flight Type not found")
+    return crud.delete_flight_type(db=db, flight_type_id=flight_type_id)
 
 
 # ==================== Flights ====================
