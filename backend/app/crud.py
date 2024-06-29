@@ -1,7 +1,8 @@
 from sqlalchemy import update, delete, func
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+import models
+import schemas
 
 # ==================== AircraftTypes ====================
 

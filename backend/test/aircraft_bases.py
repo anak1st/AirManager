@@ -45,4 +45,4 @@ def init_aircraft_bases():
 
 if __name__ == "__main__":
     init_aircraft_bases()
-    # print(json.dumps(aircrafts_seats, indent=4))
+    print(json.dumps(aircraft_bases, indent=4))

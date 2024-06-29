@@ -46,12 +46,14 @@ def add_aircraft_types():
             "name": aircraft_base["name"],
             "model": json.dumps(aircraft_base["model"])
         }
-        r = requests.put(baseUrl + "/aircraft_types/" + code, json=send)
+        r = requests.post(baseUrl + "/aircraft_types/", json=send)
         print(r.status_code, r.reason)
 
 
 if __name__ == '__main__':
-    add_superadmin()
-    add_airports()
-    add_airlies()
-    add_aircraft_types()
+    # add_superadmin()
+    # add_airports()
+    # add_airlies()
+    # add_aircraft_types()
+
+    pass

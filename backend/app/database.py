@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from .loadenv import load_env
+from loadenv import load_env
 
 env_vars = load_env()
 POSTGRES_USER = env_vars['POSTGRES_USER']

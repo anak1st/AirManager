@@ -3,10 +3,12 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+import crud
+import models
+import schemas
+from database import SessionLocal, engine
 
-from .utils import hash, get_distance_hav
+from utils import hash, get_distance_hav
 
 models.Base.metadata.create_all(bind=engine)
 

@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Float, Column, ForeignKey, Integer, String, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from database import Base
 
 
 # 基本飞机模型
